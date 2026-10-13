@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <JobDef>
+    <defName>Shahed_JamDrone</defName>
+    <driverClass>Shahed136Drones.JobDriver_JamDrone</driverClass>
+    <reportString>jamming a drone.</reportString>
+    <casualInterruptible>false</casualInterruptible>
+  </JobDef>
+
+  <IncidentDef>
+    <defName>Shahed_EnemyReconDrone</defName>
+    <label>enemy recon drone</label>
+    <category>ThreatSmall</category>
+    <targetTags>
+      <li>Map_PlayerHome</li>
+    </targetTags>
+    <workerClass>Shahed136Drones.IncidentWorker_EnemyReconDrone</workerClass>
+    <baseChance>1.2</baseChance>
+    <minRefireDays>6</minRefireDays>
+    <earliestDay>12</earliestDay>
+    <minPopulation>3</minPopulation>
+  </IncidentDef>
+
+  <IncidentDef>
+    <defName>Shahed_EnemyFPVStrike</defName>
+    <label>enemy FPV strike</label>
+    <category>ThreatBig</category>
+    <targetTags>
+      <li>Map_PlayerHome</li>
+    </targetTags>
+    <workerClass>Shahed136Drones.IncidentWorker_EnemyFPVStrike</workerClass>
+    <baseChance>0.8</baseChance>
+    <minRefireDays>8</minRefireDays>
+    <earliestDay>20</earliestDay>
+    <minPopulation>3</minPopulation>
+  </IncidentDef>
+
+</Defs>

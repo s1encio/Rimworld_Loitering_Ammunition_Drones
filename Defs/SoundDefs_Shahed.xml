@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <SoundDef>
+    <defName>Shahed_Launch</defName>
+    <context>MapOnly</context>
+    <maxSimultaneous>3</maxSimultaneous>
+    <subSounds>
+      <li>
+        <grains>
+          <li Class="AudioGrain_Clip">
+            <clipPath>Shahed/Shahed_Launch</clipPath>
+          </li>
+        </grains>
+        <volumeRange>45~50</volumeRange>
+        <pitchRange>0.95~1.05</pitchRange>
+        <distRange>25~90</distRange>
+      </li>
+    </subSounds>
+  </SoundDef>
+
+  <SoundDef>
+    <defName>Shahed_Incoming</defName>
+    <context>MapOnly</context>
+    <maxSimultaneous>4</maxSimultaneous>
+    <subSounds>
+      <li>
+        <grains>
+          <li Class="AudioGrain_Clip">
+            <clipPath>Shahed/Shahed_Incoming</clipPath>
+          </li>
+        </grains>
+        <volumeRange>50~55</volumeRange>
+        <pitchRange>0.96~1.04</pitchRange>
+        <distRange>30~120</distRange>
+      </li>
+    </subSounds>
+  </SoundDef>
+
+  <SoundDef>
+    <defName>Recon_Launch</defName>
+    <context>MapOnly</context>
+    <maxSimultaneous>3</maxSimultaneous>
+    <subSounds>
+      <li>
+        <grains>
+          <li Class="AudioGrain_Clip">
+            <clipPath>Shahed/Recon_Launch</clipPath>
+          </li>
+        </grains>
+        <volumeRange>40~45</volumeRange>
+        <pitchRange>0.97~1.03</pitchRange>
+        <distRange>25~90</distRange>
+      </li>
+    </subSounds>
+  </SoundDef>
+
+  <SoundDef>
+    <defName>Recon_Land</defName>
+    <context>MapOnly</context>
+    <maxSimultaneous>3</maxSimultaneous>
+    <subSounds>
+      <li>
+        <grains>
+          <li Class="AudioGrain_Clip">
+            <clipPath>Shahed/Recon_Land</clipPath>
+          </li>
+        </grains>
+        <volumeRange>40~45</volumeRange>
+        <pitchRange>0.97~1.03</pitchRange>
+        <distRange>25~90</distRange>
+      </li>
+    </subSounds>
+  </SoundDef>
+
+  <SoundDef>
+    <defName>Jammer_Shot</defName>
+    <context>MapOnly</context>
+    <maxSimultaneous>6</maxSimultaneous>
+    <subSounds>
+      <li>
+        <grains>
+          <li Class="AudioGrain_Clip">
+            <clipPath>Shahed/Jammer_Shot</clipPath>
+          </li>
+        </grains>
+        <volumeRange>22~26</volumeRange>
+        <pitchRange>0.94~1.06</pitchRange>
+        <distRange>15~60</distRange>
+      </li>
+    </subSounds>
+  </SoundDef>
+
+  <SoundDef>
+    <defName>FPV_Launch</defName>
+    <context>MapOnly</context>
+    <maxSimultaneous>4</maxSimultaneous>
+    <subSounds>
+      <li>
+        <grains>
+          <li Class="AudioGrain_Clip">
+            <clipPath>Shahed/FPV_Launch</clipPath>
+          </li>
+        </grains>
+        <volumeRange>30~34</volumeRange>
+        <pitchRange>0.95~1.05</pitchRange>
+        <distRange>15~60</distRange>
+      </li>
+    </subSounds>
+  </SoundDef>
+
+</Defs>

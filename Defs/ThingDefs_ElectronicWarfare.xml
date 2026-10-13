@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- Portable drone jammer: worn in the utility slot -->
+  <ThingDef ParentName="ApparelMakeableBase">
+    <defName>Shahed_PortableJammer</defName>
+    <label>portable drone jammer</label>
+    <description>A black hard-shell backpack with six whip antennas, worn on the colonist's back. While switched on, hostile FPV drones that fly within 13 cells of the wearer lose their control link and collapse: half the time the warhead goes off on the ground, otherwise the drone just breaks apart.\n\nBuilt-in generator: 24 hours of battery, recharged with chemfuel (1 chemfuel = 1 hour). Worn in the utility slot, so it doesn't replace armor.</description>
+    <techLevel>Industrial</techLevel>
+    <graphicData>
+      <texPath>Things/Shahed136/PortableJammer</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>1.0</drawSize>
+    </graphicData>
+    <tickerType>Never</tickerType>
+    <statBases>
+      <WorkToMake>18000</WorkToMake>
+      <Mass>9</Mass>
+      <MarketValue>800</MarketValue>
+      <MaxHitPoints>120</MaxHitPoints>
+      <Flammability>0.4</Flammability>
+      <EquipDelay>2</EquipDelay>
+    </statBases>
+    <costList>
+      <Steel>40</Steel>
+      <ComponentIndustrial>5</ComponentIndustrial>
+    </costList>
+    <recipeMaker>
+      <researchPrerequisite>Shahed_ElectronicWarfare</researchPrerequisite>
+      <recipeUsers Inherit="False">
+        <li>TableMachining</li>
+      </recipeUsers>
+      <unfinishedThingDef>UnfinishedTechArmor</unfinishedThingDef>
+      <skillRequirements>
+        <Crafting>6</Crafting>
+      </skillRequirements>
+      <displayPriority>520</displayPriority>
+    </recipeMaker>
+    <thingCategories>
+      <li>ApparelUtility</li>
+    </thingCategories>
+    <apparel>
+      <bodyPartGroups>
+        <li>Waist</li>
+      </bodyPartGroups>
+      <layers>
+        <li>Belt</li>
+      </layers>
+      <tags>
+        <li>Shahed_PortableJammer</li>
+      </tags>
+      <!-- drawn on the colonist's back, like the vanilla jump pack -->
+      <wornGraphicPath>Things/Shahed136/Worn/PortableJammer</wornGraphicPath>
+      <wornGraphicData>
+        <renderUtilityAsPack>true</renderUtilityAsPack>
+        <north>
+          <offset>(0,0.02)</offset>
+          <scale>(1.0,1.0)</scale>
+        </north>
+        <south>
+          <offset>(0,0.08)</offset>
+          <scale>(1.0,1.0)</scale>
+        </south>
+        <east>
+          <offset>(-0.3,0.04)</offset>
+          <scale>(1.0,1.0)</scale>
+        </east>
+        <west>
+          <offset>(0.3,0.04)</offset>
+          <scale>(1.0,1.0)</scale>
+        </west>
+      </wornGraphicData>
+      <careIfWornByCorpse>false</careIfWornByCorpse>
+      <countsAsClothingForNudity>false</countsAsClothingForNudity>
+    </apparel>
+    <comps>
+      <li Class="Shahed136Drones.CompProperties_PortableJammer">
+        <radius>12.9</radius>
+        <batteryTicks>60000</batteryTicks>
+        <ticksPerChemfuel>2500</ticksPerChemfuel>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <!-- Stationary drone jammer -->
+  <ThingDef ParentName="BuildingBase">
+    <defName>Shahed_EWJammerStation</defName>
+    <label>drone jammer station</label>
+    <description>A finned aluminium jamming unit with five antennas, mounted on a tripod. Hostile FPV drones that fly within 30 cells lose their control link and collapse: half the time the warhead goes off on the ground, otherwise the drone just breaks apart.\n\nNeeds 400 W of power.</description>
+    <thingClass>Building</thingClass>
+    <graphicData>
+      <texPath>Things/Shahed136/EWJammerStation</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(2.3,2.3)</drawSize>
+      <drawOffset>(0,0,0.6)</drawOffset>
+      <shadowData>
+        <volume>(0.8, 0.6, 0.6)</volume>
+      </shadowData>
+    </graphicData>
+    <size>(1,1)</size>
+    <rotatable>false</rotatable>
+    <altitudeLayer>Building</altitudeLayer>
+    <passability>PassThroughOnly</passability>
+    <pathCost>50</pathCost>
+    <fillPercent>0.4</fillPercent>
+    <tickerType>Normal</tickerType>
+    <statBases>
+      <MaxHitPoints>180</MaxHitPoints>
+      <WorkToBuild>4000</WorkToBuild>
+      <Flammability>0.5</Flammability>
+      <Mass>35</Mass>
+    </statBases>
+    <costList>
+      <Steel>80</Steel>
+      <ComponentIndustrial>6</ComponentIndustrial>
+    </costList>
+    <constructionSkillPrerequisite>6</constructionSkillPrerequisite>
+    <designationCategory>Security</designationCategory>
+    <researchPrerequisites>
+      <li>Shahed_ElectronicWarfare</li>
+    </researchPrerequisites>
+    <specialDisplayRadius>29.9</specialDisplayRadius>
+    <comps>
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <basePowerConsumption>400</basePowerConsumption>
+      </li>
+      <li Class="CompProperties_Flickable" />
+      <li Class="CompProperties_Breakdownable" />
+    </comps>
+    <modExtensions>
+      <li Class="Shahed136Drones.ElectronicJammerExtension">
+        <radius>29.9</radius>
+      </li>
+    </modExtensions>
+  </ThingDef>
+
+  <JobDef>
+    <defName>Shahed_RechargeJammer</defName>
+    <driverClass>Shahed136Drones.JobDriver_RechargeJammer</driverClass>
+    <reportString>recharging a portable jammer.</reportString>
+  </JobDef>
+
+</Defs>

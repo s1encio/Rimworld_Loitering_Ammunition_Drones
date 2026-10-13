@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- The FPV drone as an item a colonist equips (holds it + its controller) -->
+  <ThingDef ParentName="BaseHumanMakeableGun">
+    <defName>Shahed_FPVDrone</defName>
+    <label>FPV drone</label>
+    <description>A small first-person-view quadcopter with an explosive charge strapped on. A colonist holding it can use "Launch FPV" to fly it into a pawn, building or spot on this map, where it explodes.\n\nThe pilot stays in place controlling it the whole time. If the pilot is interrupted, drafted or downed, the link is lost and the drone falls and explodes. The battery lasts 12 hours. You can call it back to land and use it again. Enemies with guns will try to shoot it down: one hit brings it down, and the warhead may go off.</description>
+    <techLevel>Industrial</techLevel>
+    <graphicData>
+      <texPath>Things/Shahed136/FPVDrone_Item</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>0.9</drawSize>
+    </graphicData>
+    <soundInteract>Interact_Rifle</soundInteract>
+    <weaponTags>
+      <li>Shahed_FPVDrone</li>
+    </weaponTags>
+    <statBases>
+      <WorkToMake>14000</WorkToMake>
+      <Mass>2</Mass>
+      <MarketValue>350</MarketValue>
+    </statBases>
+    <costList>
+      <Steel>25</Steel>
+      <ComponentIndustrial>3</ComponentIndustrial>
+    </costList>
+    <recipeMaker>
+      <researchPrerequisite>Shahed_FPVDrones</researchPrerequisite>
+      <skillRequirements>
+        <Crafting>5</Crafting>
+      </skillRequirements>
+      <displayPriority>510</displayPriority>
+    </recipeMaker>
+    <comps>
+      <li Class="Shahed136Drones.CompProperties_FpvDrone">
+        <batteryTicks>30000</batteryTicks>
+        <speed>0.28</speed>
+        <explosionRadius>2.4</explosionRadius>
+        <damage>45</damage>
+        <armorPenetration>0.8</armorPenetration>
+        <hitPoints>1</hitPoints>
+        <enemyFireRange>26</enemyFireRange>
+      </li>
+    </comps>
+    <tools>
+      <li>
+        <label>frame</label>
+        <capacities>
+          <li>Blunt</li>
+        </capacities>
+        <power>5</power>
+        <cooldownTime>2</cooldownTime>
+      </li>
+    </tools>
+  </ThingDef>
+
+  <!-- The FPV drone in the air (drawn and ticked by the mod) -->
+  <ThingDef>
+    <defName>Shahed_FPVDroneFlying</defName>
+    <label>FPV drone</label>
+    <description>An FPV drone in flight.</description>
+    <thingClass>Shahed136Drones.FpvDroneFlying</thingClass>
+    <category>Ethereal</category>
+    <graphicData>
+      <texPath>Things/Shahed136/FPVDrone_Top</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <drawerType>None</drawerType>
+    <tickerType>Never</tickerType>
+    <altitudeLayer>MetaOverlays</altitudeLayer>
+    <selectable>true</selectable>
+    <useHitPoints>false</useHitPoints>
+    <rotatable>false</rotatable>
+    <drawOffscreen>true</drawOffscreen>
+  </ThingDef>
+
+  <JobDef>
+    <defName>Shahed_PilotFPV</defName>
+    <driverClass>Shahed136Drones.JobDriver_PilotFPV</driverClass>
+    <reportString>piloting an FPV drone.</reportString>
+    <casualInterruptible>false</casualInterruptible>
+    <suspendable>false</suspendable>
+  </JobDef>
+
+</Defs>

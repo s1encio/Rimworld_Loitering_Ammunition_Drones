@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>Shahed_LimaSpoofer</defName>
+    <label>Lima spoofer</label>
+    <description>A rugged cabinet powering a guyed lattice mast with sector panel antennas and a satellite navigation dome. Instead of noise, it broadcasts fake satellite signals: incoming Shahed-136 drones believe they are somewhere else and fly far off course and hit somewhere else. It also throws off your own Shaheds if they fly through its range.\n\nNeeds a lot of power (1500 W).</description>
+    <thingClass>Building</thingClass>
+    <graphicData>
+      <texPath>Things/Shahed136/LimaSpoofer</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(2.8,2.8)</drawSize>
+      <drawOffset>(0,0,0.4)</drawOffset>
+      <shadowData>
+        <volume>(1.4, 0.8, 1.0)</volume>
+      </shadowData>
+    </graphicData>
+    <size>(2,2)</size>
+    <rotatable>false</rotatable>
+    <altitudeLayer>Building</altitudeLayer>
+    <passability>PassThroughOnly</passability>
+    <pathCost>50</pathCost>
+    <fillPercent>0.4</fillPercent>
+    <castEdgeShadows>true</castEdgeShadows>
+    <tickerType>Normal</tickerType>
+    <statBases>
+      <MaxHitPoints>260</MaxHitPoints>
+      <WorkToBuild>8000</WorkToBuild>
+      <Flammability>0.4</Flammability>
+      <Mass>70</Mass>
+    </statBases>
+    <costList>
+      <Steel>150</Steel>
+      <ComponentIndustrial>10</ComponentIndustrial>
+      <Plasteel>30</Plasteel>
+    </costList>
+    <constructionSkillPrerequisite>8</constructionSkillPrerequisite>
+    <designationCategory>Security</designationCategory>
+    <researchPrerequisites>
+      <li>Shahed_GnssSpoofing</li>
+    </researchPrerequisites>
+    <specialDisplayRadius>54.9</specialDisplayRadius>
+    <comps>
+      <li Class="CompProperties_Power">
+        <compClass>CompPowerTrader</compClass>
+        <basePowerConsumption>1500</basePowerConsumption>
+      </li>
+      <li Class="CompProperties_Flickable" />
+      <li Class="CompProperties_Breakdownable" />
+    </comps>
+    <modExtensions>
+      <li Class="Shahed136Drones.GnssJammerExtension">
+        <radius>54.9</radius>
+        <driftMin>20</driftMin>
+        <driftMax>45</driftMax>
+        <crashChance>0</crashChance>
+        <beatsAntiJam>true</beatsAntiJam>
+      </li>
+    </modExtensions>
+  </ThingDef>
+
+</Defs>

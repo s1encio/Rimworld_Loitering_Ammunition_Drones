@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <ThingDef ParentName="BaseHumanMakeableGun">
+    <defName>Shahed_AntiDroneGun</defName>
+    <label>anti-drone gun</label>
+    <description>A handheld electronic warfare jammer: a big antenna housing up front, an electronics box with cooling fan, a carry handle and a battery pack. Aim it at an enemy drone (a recon drone circling over your colony, or an incoming FPV) to jam its control link: use "Jam drone" on the colonist holding it. The better the colonist's Shooting skill, the faster it works. A jammed drone usually crashes and leaves some salvage; sometimes it lands intact and you can keep it.\n\nIt is useless against anything that is not a drone.</description>
+    <techLevel>Industrial</techLevel>
+    <graphicData>
+      <texPath>Things/Shahed136/Weapons/AntiDroneGun</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>1.35</drawSize>
+    </graphicData>
+    <soundInteract>Interact_Rifle</soundInteract>
+    <weaponTags>
+      <li>Shahed_AntiDroneJammer</li>
+    </weaponTags>
+    <statBases>
+      <WorkToMake>30000</WorkToMake>
+      <Mass>5</Mass>
+      <AccuracyTouch>0.70</AccuracyTouch>
+      <AccuracyShort>0.80</AccuracyShort>
+      <AccuracyMedium>0.75</AccuracyMedium>
+      <AccuracyLong>0.60</AccuracyLong>
+      <RangedWeapon_Cooldown>1.7</RangedWeapon_Cooldown>
+      <MarketValue>700</MarketValue>
+    </statBases>
+    <costList>
+      <Steel>60</Steel>
+      <ComponentIndustrial>5</ComponentIndustrial>
+    </costList>
+    <recipeMaker>
+      <researchPrerequisite>Shahed_AntiDroneGuns</researchPrerequisite>
+      <skillRequirements>
+        <Crafting>6</Crafting>
+      </skillRequirements>
+      <displayPriority>500</displayPriority>
+    </recipeMaker>
+    <comps>
+      <li Class="Shahed136Drones.CompProperties_DroneJammer">
+        <range>54.9</range>
+        <baseJamTicks>1200</baseJamTicks>
+      </li>
+    </comps>
+    <tools>
+      <li>
+        <label>body</label>
+        <capacities>
+          <li>Blunt</li>
+        </capacities>
+        <power>9</power>
+        <cooldownTime>2</cooldownTime>
+      </li>
+    </tools>
+  </ThingDef>
+
+</Defs>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <ThingDef ParentName="BuildingBase">
+    <defName>Shahed_DroneLauncher</defName>
+    <label>drone launch rail</label>
+    <description>An angled launch rail on a splayed steel stand for Shahed-136 loitering munitions. Colonists assemble drones directly on the rail (add a bill in the Bills tab). Once loaded, use the "Launch Shahed-136" button to pick a target on the world map. Explodes if destroyed while loaded.</description>
+    <thingClass>Shahed136Drones.Building_DroneLauncher</thingClass>
+    <graphicData>
+      <texPath>Things/Shahed136/DroneLauncher</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(3,4)</drawSize>
+    </graphicData>
+    <!-- drawn in realtime so the texture can switch between empty and loaded -->
+    <drawerType>RealtimeOnly</drawerType>
+    <size>(3,4)</size>
+    <rotatable>false</rotatable>
+    <altitudeLayer>Building</altitudeLayer>
+    <passability>PassThroughOnly</passability>
+    <pathCost>50</pathCost>
+    <fillPercent>0.5</fillPercent>
+    <castEdgeShadows>true</castEdgeShadows>
+    <hasInteractionCell>true</hasInteractionCell>
+    <interactionCellOffset>(0,0,-2)</interactionCellOffset>
+    <terrainAffordanceNeeded>Heavy</terrainAffordanceNeeded>
+    <statBases>
+      <MaxHitPoints>350</MaxHitPoints>
+      <WorkToBuild>6000</WorkToBuild>
+      <Flammability>0.5</Flammability>
+      <Mass>150</Mass>
+    </statBases>
+    <costList>
+      <Steel>200</Steel>
+      <ComponentIndustrial>6</ComponentIndustrial>
+    </costList>
+    <constructionSkillPrerequisite>6</constructionSkillPrerequisite>
+    <designationCategory>Security</designationCategory>
+    <researchPrerequisites>
+      <li>Shahed_LoiteringMunitions</li>
+    </researchPrerequisites>
+    <inspectorTabs>
+      <li>ITab_Bills</li>
+    </inspectorTabs>
+    <building>
+      <spawnedConceptLearnOpportunity>BillsTab</spawnedConceptLearnOpportunity>
+    </building>
+    <placeWorkers>
+      <li>PlaceWorker_PreventInteractionSpotOverlap</li>
+    </placeWorkers>
+    <modExtensions>
+      <li Class="Shahed136Drones.DroneLauncherExtension">
+        <!-- How many drones can sit on the rail at once (1 = one drone per launcher) -->
+        <capacity>1</capacity>
+        <!-- Strike range in world tiles, before and after "long-range navigation" -->
+        <range>20</range>
+        <extendedRange>45</extendedRange>
+        <rangeResearch>Shahed_LongRangeNavigation</rangeResearch>
+        <!-- Flight time: ticks per world tile (2500 ticks = 1 in-game hour) -->
+        <ticksPerTile>150</ticksPerTile>
+        <minFlightTicks>300</minFlightTicks>
+        <strikeSkyfaller>Shahed136Incoming</strikeSkyfaller>
+        <!-- Goodwill change when you hit a faction settlement -->
+        <settlementGoodwillImpact>-25</settlementGoodwillImpact>
+        <!-- Recon drone: range in world tiles, flight speed (ticks per tile), endurance (60000 ticks = 1 day) -->
+        <reconRange>30</reconRange>
+        <reconTicksPerTile>100</reconTicksPerTile>
+        <reconFuelTicks>60000</reconFuelTicks>
+      </li>
+    </modExtensions>
+  </ThingDef>
+
+  <!-- Holds the warhead settings (the dive itself is animated in code) -->
+  <ThingDef ParentName="SkyfallerBase">
+    <defName>Shahed136Incoming</defName>
+    <label>Shahed-136 (diving)</label>
+    <thingClass>Shahed136Drones.Skyfaller_Shahed</thingClass>
+    <size>(1,1)</size>
+    <graphicData>
+      <texPath>Things/Shahed136/Shahed136_Flying</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>CutoutFlying</shaderType>
+      <drawSize>(3,3)</drawSize>
+    </graphicData>
+    <skyfaller>
+      <movementType>Accelerate</movementType>
+      <shadow>Things/Skyfaller/SkyfallerShadowDropPod</shadow>
+      <shadowSize>(2, 2)</shadowSize>
+      <anticipationSound>Shahed_Incoming</anticipationSound>
+      <anticipationSoundTicks>999</anticipationSoundTicks>
+      <ticksToImpactRange>250~250</ticksToImpactRange>
+      <motesPerCell>0</motesPerCell>
+    </skyfaller>
+    <modExtensions>
+      <li Class="Shahed136Drones.DroneWarheadExtension">
+        <!-- main blast -->
+        <explosionRadius>9.9</explosionRadius>
+        <damage>250</damage>
+        <armorPenetration>2.0</armorPenetration>
+        <!-- fragmentation: extra blasts scattered around the impact -->
+        <secondaryExplosions>4</secondaryExplosions>
+        <secondaryRadius>4.5</secondaryRadius>
+        <secondaryDamage>120</secondaryDamage>
+        <!-- burning fuel -->
+        <fireRadius>6.9</fireRadius>
+        <fireDamage>8</fireDamage>
+        <cameraShake>4</cameraShake>
+      </li>
+    </modExtensions>
+  </ThingDef>
+
+  <!-- Invisible overhead "shell" that flies along with a diving Shahed, so that air-defense
+       (CIWS) mods and shield projectors can intercept it. Never explodes by itself. -->
+  <ThingDef ParentName="BaseBullet">
+    <defName>Shahed_DroneDecoy</defName>
+    <label>Shahed-136</label>
+    <thingClass>Shahed136Drones.Projectile_DroneDecoy</thingClass>
+    <graphicData>
+      <texPath>Things/Shahed136/Decoy</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <projectile>
+      <flyOverhead>true</flyOverhead>
+      <damageDef>Bomb</damageDef>
+      <damageAmountBase>1</damageAmountBase>
+      <explosionRadius>4.9</explosionRadius>
+      <speed>30</speed>
+    </projectile>
+  </ThingDef>
+
+</Defs>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- The recon drone as an item (after landing). Haul it to a stockpile, mount it again with a bill. -->
+  <ThingDef ParentName="ResourceBase">
+    <defName>Shahed_ReconDrone</defName>
+    <label>recon drone</label>
+    <description>A small fixed-wing reconnaissance drone with a camera pod. Mount it on a drone launch rail with the "mount recon drone" bill to fly it again.</description>
+    <graphicData>
+      <texPath>Things/Shahed136/ReconDrone_Item</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>(1.6,1.6)</drawSize>
+    </graphicData>
+    <stackLimit>1</stackLimit>
+    <statBases>
+      <MarketValue>650</MarketValue>
+      <MaxHitPoints>80</MaxHitPoints>
+      <Mass>12</Mass>
+      <Flammability>0.6</Flammability>
+    </statBases>
+    <thingCategories>
+      <li>Manufactured</li>
+    </thingCategories>
+  </ThingDef>
+
+  <!-- The recon drone while it flies over a map (drawn and ticked by the mod) -->
+  <ThingDef>
+    <defName>Shahed_ReconDroneFlying</defName>
+    <label>recon drone</label>
+    <description>A reconnaissance drone circling overhead.</description>
+    <thingClass>Shahed136Drones.ReconDroneFlying</thingClass>
+    <category>Ethereal</category>
+    <graphicData>
+      <texPath>Things/Shahed136/ReconDrone_Top</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <drawerType>None</drawerType>
+    <tickerType>Never</tickerType>
+    <altitudeLayer>MetaOverlays</altitudeLayer>
+    <selectable>true</selectable>
+    <useHitPoints>false</useHitPoints>
+    <rotatable>false</rotatable>
+    <drawOffscreen>true</drawOffscreen>
+  </ThingDef>
+
+  <JobDef>
+    <defName>Shahed_OperateReconDrone</defName>
+    <driverClass>Shahed136Drones.JobDriver_OperateReconDrone</driverClass>
+    <reportString>operating recon drone.</reportString>
+    <casualInterruptible>false</casualInterruptible>
+    <suspendable>false</suspendable>
+  </JobDef>
+
+</Defs>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <WorldObjectDef>
+    <defName>Shahed136InFlight</defName>
+    <label>Shahed-136</label>
+    <description>A Shahed-136 loitering munition on its way to the target.</description>
+    <worldObjectClass>Shahed136Drones.WorldObject_DroneInFlight</worldObjectClass>
+    <texture>World/WorldObjects/Shahed136</texture>
+    <useDynamicDrawer>true</useDynamicDrawer>
+    <!-- drawn in code so it points along the flight path -->
+    <expandingIcon>false</expandingIcon>
+  </WorldObjectDef>
+
+  <WorldObjectDef>
+    <defName>Shahed_ReconDroneWorld</defName>
+    <label>recon drone</label>
+    <description>A reconnaissance drone. Select it to recall it or assign an operator.</description>
+    <worldObjectClass>Shahed136Drones.WorldObject_ReconDrone</worldObjectClass>
+    <texture>World/WorldObjects/ReconDrone</texture>
+    <useDynamicDrawer>true</useDynamicDrawer>
+    <expandingIcon>false</expandingIcon>
+  </WorldObjectDef>
+
+  <!-- Temporary map parent for empty tiles watched by a recon drone -->
+  <WorldObjectDef>
+    <defName>Shahed_ReconArea</defName>
+    <label>recon area</label>
+    <description>An area watched by a recon drone.</description>
+    <worldObjectClass>Shahed136Drones.MapParent_ReconArea</worldObjectClass>
+    <texture>World/WorldObjects/ReconArea</texture>
+    <expandingIcon>false</expandingIcon>
+    <mapGenerator>Encounter</mapGenerator>
+    <canBePlayerHome>false</canBePlayerHome>
+    <selectable>false</selectable>
+  </WorldObjectDef>
+
+</Defs>

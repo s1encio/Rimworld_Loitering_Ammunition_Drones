@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <RecipeDef>
+    <defName>Shahed_AssembleShahed136</defName>
+    <label>assemble Shahed-136</label>
+    <description>Assemble a Shahed-136 loitering munition and mount it directly on this launch rail. Each rail holds one drone; you can only build a new one after launching it.</description>
+    <jobString>Assembling Shahed-136.</jobString>
+    <workerClass>Shahed136Drones.RecipeWorker_AssembleDrone</workerClass>
+    <workAmount>4000</workAmount>
+    <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+    <workSkill>Crafting</workSkill>
+    <effectWorking>Smith</effectWorking>
+    <soundWorking>Recipe_Machining</soundWorking>
+    <ingredients>
+      <li>
+        <filter><thingDefs><li>Steel</li></thingDefs></filter>
+        <count>60</count>
+      </li>
+      <li>
+        <filter><thingDefs><li>ComponentIndustrial</li></thingDefs></filter>
+        <count>2</count>
+      </li>
+      <li>
+        <filter><thingDefs><li>Chemfuel</li></thingDefs></filter>
+        <count>25</count>
+      </li>
+    </ingredients>
+    <fixedIngredientFilter>
+      <thingDefs>
+        <li>Steel</li>
+        <li>ComponentIndustrial</li>
+        <li>Chemfuel</li>
+      </thingDefs>
+    </fixedIngredientFilter>
+    <skillRequirements>
+      <Crafting>6</Crafting>
+    </skillRequirements>
+    <researchPrerequisite>Shahed_LoiteringMunitions</researchPrerequisite>
+    <recipeUsers>
+      <li>Shahed_DroneLauncher</li>
+    </recipeUsers>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>Shahed_AssembleReconDrone</defName>
+    <label>assemble recon drone</label>
+    <description>Build a new recon drone and mount it on this launch rail.</description>
+    <jobString>Assembling recon drone.</jobString>
+    <workerClass>Shahed136Drones.RecipeWorker_AssembleRecon</workerClass>
+    <workAmount>3000</workAmount>
+    <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+    <workSkill>Crafting</workSkill>
+    <effectWorking>Smith</effectWorking>
+    <soundWorking>Recipe_Machining</soundWorking>
+    <ingredients>
+      <li>
+        <filter><thingDefs><li>Steel</li></thingDefs></filter>
+        <count>40</count>
+      </li>
+      <li>
+        <filter><thingDefs><li>ComponentIndustrial</li></thingDefs></filter>
+        <count>4</count>
+      </li>
+      <li>
+        <filter><thingDefs><li>Chemfuel</li></thingDefs></filter>
+        <count>10</count>
+      </li>
+    </ingredients>
+    <fixedIngredientFilter>
+      <thingDefs>
+        <li>Steel</li>
+        <li>ComponentIndustrial</li>
+        <li>Chemfuel</li>
+      </thingDefs>
+    </fixedIngredientFilter>
+    <skillRequirements>
+      <Crafting>6</Crafting>
+    </skillRequirements>
+    <researchPrerequisite>Shahed_ReconDrones</researchPrerequisite>
+    <recipeUsers>
+      <li>Shahed_DroneLauncher</li>
+    </recipeUsers>
+  </RecipeDef>
+
+  <RecipeDef>
+    <defName>Shahed_MountReconDrone</defName>
+    <label>mount recon drone</label>
+    <description>Take a recon drone from storage, refuel it and mount it on this launch rail.</description>
+    <jobString>Mounting recon drone.</jobString>
+    <workerClass>Shahed136Drones.RecipeWorker_AssembleRecon</workerClass>
+    <workAmount>400</workAmount>
+    <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+    <workSkill>Crafting</workSkill>
+    <soundWorking>Recipe_Machining</soundWorking>
+    <ingredients>
+      <li>
+        <filter><thingDefs><li>Shahed_ReconDrone</li></thingDefs></filter>
+        <count>1</count>
+      </li>
+    </ingredients>
+    <fixedIngredientFilter>
+      <thingDefs>
+        <li>Shahed_ReconDrone</li>
+      </thingDefs>
+    </fixedIngredientFilter>
+    <researchPrerequisite>Shahed_ReconDrones</researchPrerequisite>
+    <recipeUsers>
+      <li>Shahed_DroneLauncher</li>
+    </recipeUsers>
+  </RecipeDef>
+
+  <WorkGiverDef>
+    <defName>Shahed_DoBillsDroneLauncher</defName>
+    <label>assemble drones</label>
+    <giverClass>Shahed136Drones.WorkGiver_DoBillDroneLauncher</giverClass>
+    <workType>Crafting</workType>
+    <priorityInType>60</priorityInType>
+    <fixedBillGiverDefs>
+      <li>Shahed_DroneLauncher</li>
+    </fixedBillGiverDefs>
+    <verb>assemble</verb>
+    <gerund>assembling drones at</gerund>
+    <requiredCapacities>
+      <li>Manipulation</li>
+    </requiredCapacities>
+    <prioritizeSustains>true</prioritizeSustains>
+  </WorkGiverDef>
+
+</Defs>

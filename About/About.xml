@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <packageId>syneezvetik.shahed136drones</packageId>
+  <name>Loitering Munition Drones</name>
+  <author>syneezvetik</author>
+  <supportedVersions>
+    <li>1.6</li>
+    <li>1.7</li>
+  </supportedVersions>
+  <modDependencies>
+    <li>
+      <packageId>brrainz.harmony</packageId>
+      <displayName>Harmony</displayName>
+      <steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
+      <downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
+    </li>
+  </modDependencies>
+  <loadAfter>
+    <li>brrainz.harmony</li>
+  </loadAfter>
+  <description>Adds a new "Drones" research tab, a drone launch rail, the Shahed-136 loitering munition, a reconnaissance drone and an anti-drone gun.
+
+SHAHED-136
+Research loitering munitions, build a launch rail and assemble a drone on it. Launch it at a target within range on the world map: another colony, a map you currently have open (e.g. a raid or quest site), or a faction settlement. Pick the tile, then the exact spot, building or pawn to hit. The drone crosses the world map, comes in from the map edge and dives onto the target with a massive explosion.
+You need recon at the target: a recon drone, a caravan, or a colonist on that map.
+Bomb an enemy settlement hard enough and the survivors flee and abandon their base. The damage stays for 3 days after the last strike.
+Research "long-range navigation" to more than double the strike range.
+
+RECON DRONE
+Build one on the launch rail. A colonist launches it and stays at the rail as operator. The drone flies to a tile, opens its map and circles over it, revealing what's below. Fly it manually, set it to autopilot, or send it home, where it lands and can be stored and reused. While it circles over a tile, you can strike that tile with a Shahed-136.
+
+ANTI-DRONE GUN
+Hostile factions now send their own recon drones to scout your colony. If one gets away, a raid follows. Give a colonist the anti-drone gun and jam it: the better their Shooting skill, the faster it goes. A jammed drone crashes and leaves salvage, or sometimes lands intact so you can keep it.
+
+Requires Harmony.</description>
+</ModMetaData>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <ResearchTabDef>
+    <defName>Drones</defName>
+    <label>Drones</label>
+  </ResearchTabDef>
+
+  <ResearchProjectDef>
+    <defName>Shahed_LoiteringMunitions</defName>
+    <label>loitering munitions</label>
+    <description>Cheap delta-wing drones with a piston engine and an explosive warhead. Unlocks the drone launch rail and the Shahed-136.</description>
+    <baseCost>1600</baseCost>
+    <techLevel>Industrial</techLevel>
+    <prerequisites>
+      <li>MicroelectronicsBasics</li>
+    </prerequisites>
+    <tab>Drones</tab>
+    <researchViewX>0.00</researchViewX>
+    <researchViewY>0.00</researchViewY>
+  </ResearchProjectDef>
+
+  <ResearchProjectDef>
+    <defName>Shahed_LongRangeNavigation</defName>
+    <label>long-range navigation</label>
+    <description>Improved inertial and satellite navigation lets drones fly much further. Increases the strike range of all drone launch rails.</description>
+    <baseCost>2400</baseCost>
+    <techLevel>Industrial</techLevel>
+    <prerequisites>
+      <li>Shahed_LoiteringMunitions</li>
+    </prerequisites>
+    <tab>Drones</tab>
+    <researchViewX>1.00</researchViewX>
+    <researchViewY>0.00</researchViewY>
+  </ResearchProjectDef>
+
+  <ResearchProjectDef>
+    <defName>Shahed_ReconDrones</defName>
+    <label>reconnaissance drones</label>
+    <description>Small fixed-wing drones with a camera pod. Launched from the drone launch rail, they fly to a distant tile and circle over it, giving you eyes on the target. A recon drone on station counts as recon for Shahed-136 strikes.</description>
+    <baseCost>1200</baseCost>
+    <techLevel>Industrial</techLevel>
+    <prerequisites>
+      <li>Shahed_LoiteringMunitions</li>
+    </prerequisites>
+    <tab>Drones</tab>
+    <researchViewX>1.00</researchViewX>
+    <researchViewY>1.00</researchViewY>
+  </ResearchProjectDef>
+
+  <ResearchProjectDef>
+    <defName>Shahed_AntiDroneGuns</defName>
+    <label>anti-drone guns</label>
+    <description>Handheld electronic warfare jammers. They blast drone control and navigation frequencies with noise. Unlocks the anti-drone gun, crafted at a machining table. It lets a colonist jam enemy recon drones circling over the colony.</description>
+    <baseCost>1400</baseCost>
+    <techLevel>Industrial</techLevel>
+    <prerequisites>
+      <li>MicroelectronicsBasics</li>
+    </prerequisites>
+    <tab>Drones</tab>
+    <researchViewX>0.00</researchViewX>
+    <researchViewY>2.00</researchViewY>
+  </ResearchProjectDef>
+
+  <ResearchProjectDef>
+    <defName>Shahed_GnssSpoofing</defName>
+    <label>GNSS spoofing</label>
+    <description>Instead of just drowning out satellite signals, broadcast fake ones. Unlocks the Lima spoofer: a mast-mounted system that feeds incoming drones false positions, sending them far off course so they hit somewhere else.</description>
+    <baseCost>3200</baseCost>
+    <techLevel>Industrial</techLevel>
+    <prerequisites>
+      <li>Shahed_AntiDroneGuns</li>
+    </prerequisites>
+    <tab>Drones</tab>
+    <researchViewX>1.00</researchViewX>
+    <researchViewY>2.00</researchViewY>
+  </ResearchProjectDef>
+
+  <ResearchProjectDef>
+    <defName>Shahed_FPVDrones</defName>
+    <label>FPV drones</label>
+    <description>Small first-person-view quadcopters with an explosive charge. A colonist pilots one into a target on the local map. Crafted at a machining table.</description>
+    <baseCost>1200</baseCost>
+    <techLevel>Industrial</techLevel>
+    <prerequisites>
+      <li>MicroelectronicsBasics</li>
+    </prerequisites>
+    <tab>Drones</tab>
+    <researchViewX>0.00</researchViewX>
+    <researchViewY>3.00</researchViewY>
+  </ResearchProjectDef>
+
+  <ResearchProjectDef>
+    <defName>Shahed_ElectronicWarfare</defName>
+    <label>electronic warfare</label>
+    <description>Broadband radio jammers that drown out drone control links. Unlocks the portable drone jammer (worn by a colonist) and the stationary drone jammer. Hostile FPV drones that fly into their range lose control and collapse.</description>
+    <baseCost>1800</baseCost>
+    <techLevel>Industrial</techLevel>
+    <prerequisites>
+      <li>Shahed_AntiDroneGuns</li>
+    </prerequisites>
+    <tab>Drones</tab>
+    <researchViewX>1.00</researchViewX>
+    <researchViewY>3.00</researchViewY>
+  </ResearchProjectDef>
+
+</Defs>
