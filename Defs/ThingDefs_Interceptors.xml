@@ -67,7 +67,7 @@
   <ThingDef ParentName="Shahed_InterceptorBase">
     <defName>Shahed_Yolka</defName>
     <label>Yolka interceptor</label>
-    <description>A small, cheap interceptor drone with X-shaped wings and an AI camera, fired from a pistol-grip launcher. Once launched, it finds and rams the nearest enemy FPV or recon drone on its own: fire-and-forget, the colonist is free right away.\n\nToo slow and too small to stop a Shahed. Its battery only lasts a short time; if it finds nothing, it self-destructs. One interceptor is used up per launch.\n\nWith "Auto-launch" on, the colonist fires it by themselves as soon as an enemy drone comes close.</description>
+    <description>A small, cheap interceptor drone with X-shaped wings and a twin AI camera. Once launched, it finds and rams the nearest enemy FPV or recon drone on its own: fire-and-forget, the colonist is free right away.\n\nToo slow and too small to stop a Shahed. Its battery only lasts a short time; if it finds nothing, it self-destructs. One interceptor is used up per launch.\n\nWith "Auto-launch" on, the colonist fires it by themselves as soon as an enemy drone comes close.</description>
     <graphicData>
       <texPath>Things/Shahed136/Yolka_Item</texPath>
       <graphicClass>Graphic_Single</graphicClass>
