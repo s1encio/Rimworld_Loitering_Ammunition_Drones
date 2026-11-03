@@ -67,6 +67,9 @@ namespace Shahed136Drones
             CompFpvDrone fpv = CompFpvDrone.Of(__instance);
             if (fpv != null)
                 __result = __result.Concat(new Gizmo[] { fpv.MakeGizmo(__instance) });
+            CompInterceptor icp = CompInterceptor.Of(__instance);
+            if (icp != null)
+                __result = __result.Concat(icp.MakeGizmos(__instance).ToList());
         }
 
         public static bool CheckDefeated_Prefix(object[] __args)

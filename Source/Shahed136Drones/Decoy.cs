@@ -96,6 +96,14 @@ namespace Shahed136Drones
                 FpvDroneFlying.SpawnEnemy(map, EnemyFaction(), LocalTargetInfo.Invalid);
         }
 
+        [DebugAction("Loitering Munition Drones", "Enemy Shahed wave (3 drones)", allowedGameStates = AllowedGameStates.PlayingOnMap)]
+        private static void EnemyShahedWave()
+        {
+            Map map = Find.CurrentMap;
+            if (map != null)
+                Current.Game.GetComponent<GameComponent_DroneFlights>().StartEnemyStrike(map, EnemyFaction(), 3);
+        }
+
         [DebugAction("Loitering Munition Drones", "Enemy Shahed strike (random building)", allowedGameStates = AllowedGameStates.PlayingOnMap)]
         private static void EnemyShahedRandom()
         {

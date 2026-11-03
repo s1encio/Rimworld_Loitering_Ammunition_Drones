@@ -122,6 +122,7 @@ namespace Shahed136Drones
         {
             MapDrones.Clear();
             FpvDroneFlying.Active.Clear();
+            InterceptorFlying.Active.Clear();
         }
 
         /// <summary>True while a recon drone is circling over this map parent's tile.</summary>
@@ -263,7 +264,53 @@ namespace Shahed136Drones
             drawn = ground + new Vector3(0f, 0f, 3.5f * height);
         }
 
-        private bool AnythingToDraw => anims.Count > 0 || dives.Count > 0 || MapDrones.Count > 0 || FpvDroneFlying.Active.Count > 0;
+        private bool AnythingToDraw => anims.Count > 0 || dives.Count > 0 || MapDrones.Count > 0 || FpvDroneFlying.Active.Count > 0 || InterceptorFlying.Active.Count > 0;
+        private static readonly Dictionary<string, Texture2D> interceptorTex = new Dictionary<string, Texture2D>();
+        private static Material interceptorShadowMat;
+
+        private static Texture2D InterceptorTex(string path)
+        {
+            if (path.NullOrEmpty()) return null;
+            if (!interceptorTex.TryGetValue(path, out Texture2D t))
+            {
+                t = ContentFinder<Texture2D>.Get(path, false);
+                interceptorTex[path] = t;
+            }
+            return t;
+        }
+
+        // ---------------- access to diving Shaheds for interceptors ----------------
+        public IEnumerable<DiveAnim> EnemyDivesOn(Map map)
+        {
+            foreach (DiveAnim d in dives)
+                if (d.map == map && !d.landing && d.attacker != Faction.OfPlayer)
+                    yield return d;
+        }
+
+        public bool DiveAlive(DiveAnim d) => dives.Contains(d);
+
+        /// <summary>Where the Shahed is drawn right now (what an interceptor has to fly to).</summary>
+        public Vector3 DiveDrawnPos(DiveAnim d)
+        {
+            DiveState(d, Find.TickManager.TicksGame - d.startTick, out Vector3 ground, out Vector3 drawn, out float h);
+            drawn.y = 0f;
+            return drawn;
+        }
+
+        /// <summary>Destroyed in mid-air by an interceptor: wreckage falls where it is.</summary>
+        public void KillDive(DiveAnim d, string msg)
+        {
+            if (!dives.Remove(d))
+                return;
+            if (d.decoy != null && !d.decoy.Destroyed) { d.decoy.arrived = true; d.decoy.Destroy(); }
+            DiveState(d, Find.TickManager.TicksGame - d.startTick, out Vector3 ground, out Vector3 drawn, out float h);
+            IntVec3 c = ground.ToIntVec3();
+            if (!c.InBounds(d.map)) c = d.cell;
+            FleckMaker.ThrowSmoke(drawn, d.map, 3f);
+            FleckMaker.ThrowFireGlow(drawn, d.map, 2f);
+            GenExplosion.DoExplosion(c, d.map, 1.9f, DamageDefOf.Bomb, null, 12);     // falling wreckage, not the warhead
+            Messages.Message(msg, new TargetInfo(c, d.map), MessageTypeDefOf.PositiveEvent, false);
+        }
         private const float FpvDrawSize = 1.7f;
         private static Texture2D fpvTexA, fpvTexB;   // two spinning-prop frames
         private static Material fpvShadowMat;
@@ -365,6 +412,23 @@ namespace Shahed136Drones
                     Graphics.DrawMesh(MeshPool.plane10, Matrix4x4.TRS(sp, Quaternion.AngleAxis(f.heading, Vector3.up), new Vector3(FpvDrawSize * 0.8f, 1f, FpvDrawSize * 0.8f)), fpvShadowMat, 0, cam);
                 }
             }
+            DrawInterceptorShadows(cam);
+        }
+
+        private void DrawInterceptorShadows(Camera cam)
+        {
+            if (InterceptorFlying.Active.Count == 0) return;
+            if (interceptorShadowMat == null)
+                interceptorShadowMat = MaterialPool.MatFrom("Things/Shahed136/Interceptor_Shadow", ShaderDatabase.Transparent, new Color(0f, 0f, 0f, 0.3f));
+            Map cur = Find.CurrentMap;
+            foreach (InterceptorFlying f in InterceptorFlying.Active)
+            {
+                if (f.Map != cur) continue;
+                float s = f.Props.drawSize * 0.7f;
+                Vector3 sp = f.exactPos + new Vector3(0.9f, 0f, -1.3f);
+                sp.y = AltitudeLayer.Shadows.AltitudeFor();
+                Graphics.DrawMesh(MeshPool.plane10, Matrix4x4.TRS(sp, Quaternion.AngleAxis(f.heading, Vector3.up), new Vector3(s, 1f, s)), interceptorShadowMat, 0, cam);
+            }
         }
 
         // The drone itself is drawn as an overlay on top of the finished map image,
@@ -414,6 +478,24 @@ namespace Shahed136Drones
                     Matrix4x4 saved = GUI.matrix;
                     UI.RotateAroundPivot(f.heading, center);
                     GUI.DrawTexture(new Rect(center.x - px / 2f, center.y - px / 2f, px, px), fpvTex);
+                    GUI.matrix = saved;
+                }
+            }
+            if (InterceptorFlying.Active.Count > 0)
+            {
+                bool frameB = !Find.TickManager.Paused && (Time.frameCount / 3) % 2 == 1;
+                Map cur = Find.CurrentMap;
+                foreach (InterceptorFlying f in InterceptorFlying.Active)
+                {
+                    if (f.Map != cur) continue;
+                    CompProperties_Interceptor pr = f.Props;
+                    Texture2D tex = InterceptorTex(frameB ? pr.flyTexB : pr.flyTexA) ?? InterceptorTex(pr.flyTexA);
+                    if (tex == null) continue;
+                    Vector2 center = f.exactPos.MapToUIPosition();
+                    float px = pr.drawSize * cellPx;
+                    Matrix4x4 saved = GUI.matrix;
+                    UI.RotateAroundPivot(f.heading, center);
+                    GUI.DrawTexture(new Rect(center.x - px / 2f, center.y - px / 2f, px, px), tex);
                     GUI.matrix = saved;
                 }
             }
@@ -573,6 +655,27 @@ namespace Shahed136Drones
                 LetterDefOf.ThreatBig, new TargetInfo(cell, map));
         }
 
+        /// <summary>A wave of enemy Shaheds at random colony buildings, a few seconds apart.</summary>
+        public bool StartEnemyStrike(Map map, Faction faction, int count)
+        {
+            List<Building> blds = map.listerBuildings.allBuildingsColonist;
+            if (blds.Count == 0)
+                return false;
+            ThingDef warhead = DefDatabase<ThingDef>.GetNamedSilentFail("Shahed136Incoming");
+            IntVec3 first = IntVec3.Invalid;
+            for (int i = 0; i < count; i++)
+            {
+                IntVec3 c = blds.RandomElement().Position;
+                if (!first.IsValid) first = c;
+                StartDive(map, c, null, warhead, faction);
+                dives[dives.Count - 1].startTick += i * Rand.Range(120, 360);   // stagger the arrivals
+            }
+            Find.LetterStack.ReceiveLetter("Shahed strike",
+                faction.Name + " launched " + count + " Shahed-136 drone" + (count > 1 ? "s" : "") + " at your colony. They will hit your buildings in seconds.\n\nShoot them down with air defense or P1-SUN interceptors, or throw them off course with a Lima spoofer.",
+                LetterDefOf.ThreatBig, new TargetInfo(first, map));
+            return true;
+        }
+
         private void StartDive(Map map, IntVec3 cell, Thing thing, ThingDef warheadDef, Faction attacker)
         {
             float a = Rand.Range(0f, 360f) * Mathf.Deg2Rad;
@@ -628,6 +731,11 @@ namespace Shahed136Drones
             if (FpvDroneFlying.Active.Count > 0)
                 foreach (FpvDroneFlying f in FpvDroneFlying.Active.ToList())
                     f.DroneTick();
+            if (InterceptorFlying.Active.Count > 0)
+                foreach (InterceptorFlying ic in InterceptorFlying.Active.ToList())
+                    ic.DroneTick();
+            if (Find.TickManager.TicksGame % 30 == 0)
+                Interception.AutoLaunchTick();
 
             for (int i = flights.Count - 1; i >= 0; i--)
             {

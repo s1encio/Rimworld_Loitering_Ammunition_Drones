@@ -392,7 +392,7 @@ namespace Shahed136Drones
         }
 
         /// <summary>Hit by gunfire: either the bullet sets off the warhead, or it just drops.</summary>
-        private void ShotDown()
+        public void ShotDown()
         {
             IntVec3 c = Position;
             Map map = Map;

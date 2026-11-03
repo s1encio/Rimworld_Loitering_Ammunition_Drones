@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- Shared base for interceptor items a colonist equips -->
+  <ThingDef Name="Shahed_InterceptorBase" ParentName="BaseHumanMakeableGun" Abstract="True">
+    <techLevel>Industrial</techLevel>
+    <soundInteract>Interact_Rifle</soundInteract>
+    <weaponTags>
+      <li>Shahed_Interceptor</li>
+    </weaponTags>
+    <tools>
+      <li>
+        <label>frame</label>
+        <capacities>
+          <li>Blunt</li>
+        </capacities>
+        <power>5</power>
+        <cooldownTime>2</cooldownTime>
+      </li>
+    </tools>
+  </ThingDef>
+
+  <!-- P1-SUN: piloted, very fast, built to hunt Shaheds (also hits FPV and recon drones) -->
+  <ThingDef ParentName="Shahed_InterceptorBase">
+    <defName>Shahed_P1SUN</defName>
+    <label>P1-SUN interceptor</label>
+    <description>A bullet-shaped high-speed interceptor drone with four rotors, built to hunt Shahed attack drones. A colonist holding it can launch it at an enemy drone in the air and pilots it until it hits: it rams the target at over 300 km/h and destroys it in mid-air.\n\nIt also catches FPV and recon drones. The pilot has to stay in place, outside. If no enemy drones are left, it flies back and lands. One interceptor is used up per kill.\n\nWith "Auto-launch" on, the colonist launches it by themselves as soon as an enemy drone comes close.</description>
+    <graphicData>
+      <texPath>Things/Shahed136/P1SUN_Item</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>1.0</drawSize>
+    </graphicData>
+    <statBases>
+      <WorkToMake>16000</WorkToMake>
+      <Mass>3</Mass>
+      <MarketValue>450</MarketValue>
+    </statBases>
+    <costList>
+      <Steel>30</Steel>
+      <ComponentIndustrial>4</ComponentIndustrial>
+    </costList>
+    <recipeMaker>
+      <researchPrerequisite>Shahed_InterceptorDrones</researchPrerequisite>
+      <skillRequirements>
+        <Crafting>6</Crafting>
+      </skillRequirements>
+      <displayPriority>515</displayPriority>
+    </recipeMaker>
+    <comps>
+      <li Class="Shahed136Drones.CompProperties_Interceptor">
+        <autonomous>false</autonomous>
+        <canHitShahed>true</canHitShahed>
+        <canHitSmall>true</canHitSmall>
+        <speed>0.9</speed>
+        <turnRate>10</turnRate>
+        <batteryTicks>3000</batteryTicks>
+        <killChance>0.85</killChance>
+        <acquireRange>90</acquireRange>
+        <drawSize>1.6</drawSize>
+        <flyTexA>Things/Shahed136/P1SUN_FlyA</flyTexA>
+        <flyTexB>Things/Shahed136/P1SUN_FlyB</flyTexB>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <!-- Yolka: small, hand-launched, fire-and-forget, hunts FPV and recon drones -->
+  <ThingDef ParentName="Shahed_InterceptorBase">
+    <defName>Shahed_Yolka</defName>
+    <label>Yolka interceptor</label>
+    <description>A small, cheap interceptor drone with X-shaped wings and an AI camera, fired from a pistol-grip launcher. Once launched, it finds and rams the nearest enemy FPV or recon drone on its own: fire-and-forget, the colonist is free right away.\n\nToo slow and too small to stop a Shahed. Its battery only lasts a short time; if it finds nothing, it self-destructs. One interceptor is used up per launch.\n\nWith "Auto-launch" on, the colonist fires it by themselves as soon as an enemy drone comes close.</description>
+    <graphicData>
+      <texPath>Things/Shahed136/Yolka_Item</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <drawSize>0.8</drawSize>
+    </graphicData>
+    <statBases>
+      <WorkToMake>8000</WorkToMake>
+      <Mass>1.3</Mass>
+      <MarketValue>180</MarketValue>
+    </statBases>
+    <costList>
+      <Steel>15</Steel>
+      <ComponentIndustrial>2</ComponentIndustrial>
+    </costList>
+    <recipeMaker>
+      <researchPrerequisite>Shahed_InterceptorDrones</researchPrerequisite>
+      <skillRequirements>
+        <Crafting>4</Crafting>
+      </skillRequirements>
+      <displayPriority>516</displayPriority>
+    </recipeMaker>
+    <comps>
+      <li Class="Shahed136Drones.CompProperties_Interceptor">
+        <autonomous>true</autonomous>
+        <canHitShahed>false</canHitShahed>
+        <canHitSmall>true</canHitSmall>
+        <speed>0.6</speed>
+        <turnRate>16</turnRate>
+        <batteryTicks>900</batteryTicks>
+        <killChance>0.75</killChance>
+        <acquireRange>45</acquireRange>
+        <drawSize>1.1</drawSize>
+        <flyTexA>Things/Shahed136/Yolka_FlyA</flyTexA>
+        <flyTexB>Things/Shahed136/Yolka_FlyB</flyTexB>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <!-- Any interceptor in the air (drawn and ticked by the mod) -->
+  <ThingDef>
+    <defName>Shahed_InterceptorFlying</defName>
+    <label>interceptor drone</label>
+    <description>An interceptor drone in flight.</description>
+    <thingClass>Shahed136Drones.InterceptorFlying</thingClass>
+    <category>Ethereal</category>
+    <graphicData>
+      <texPath>Things/Shahed136/P1SUN_FlyA</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <drawerType>None</drawerType>
+    <tickerType>Never</tickerType>
+    <altitudeLayer>MetaOverlays</altitudeLayer>
+    <selectable>true</selectable>
+    <useHitPoints>false</useHitPoints>
+    <rotatable>false</rotatable>
+    <drawOffscreen>true</drawOffscreen>
+  </ThingDef>
+
+  <JobDef>
+    <defName>Shahed_LaunchInterceptor</defName>
+    <driverClass>Shahed136Drones.JobDriver_LaunchInterceptor</driverClass>
+    <reportString>flying an interceptor drone.</reportString>
+    <casualInterruptible>false</casualInterruptible>
+    <suspendable>false</suspendable>
+  </JobDef>
+
+  <!-- Hostile factions launch waves of Shaheds at your colony -->
+  <IncidentDef>
+    <defName>Shahed_EnemyShahedStrike</defName>
+    <label>enemy Shahed strike</label>
+    <category>ThreatBig</category>
+    <targetTags>
+      <li>Map_PlayerHome</li>
+    </targetTags>
+    <workerClass>Shahed136Drones.IncidentWorker_EnemyShahedStrike</workerClass>
+    <baseChance>0.7</baseChance>
+    <minRefireDays>10</minRefireDays>
+    <earliestDay>25</earliestDay>
+    <minPopulation>3</minPopulation>
+  </IncidentDef>
+
+</Defs>
