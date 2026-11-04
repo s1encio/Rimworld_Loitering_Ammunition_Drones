@@ -162,6 +162,7 @@ namespace Shahed136Drones
             public Vector3 origin;
             public int startTick;
             public bool recon;
+            public ThingDef type;
         }
 
         /// <summary>How many air-defense hits a diving Shahed survives (it goes down on this one).</summary>
@@ -181,9 +182,9 @@ namespace Shahed136Drones
         private static Texture2D droneTex;
         private static Material shadowMat;
 
-        public void StartLaunchAnimation(Map map, Vector3 origin, bool recon = false)
+        public void StartLaunchAnimation(Map map, Vector3 origin, bool recon = false, ThingDef type = null)
         {
-            anims.Add(new LaunchAnim { map = map, origin = origin, startTick = Find.TickManager.TicksGame, recon = recon });
+            anims.Add(new LaunchAnim { map = map, origin = origin, startTick = Find.TickManager.TicksGame, recon = recon, type = type });
         }
 
         /// <summary>Recon drone flies in from the map edge and lands at cell, becoming an item.</summary>
@@ -315,8 +316,8 @@ namespace Shahed136Drones
         private static Texture2D fpvTexA, fpvTexB;   // two spinning-prop frames
         private static Material fpvShadowMat;
 
-        // Calls act(drawnPos, groundPos, height, angle, size, isRecon) for every drone visible on the current map.
-        private void ForEachVisibleDrone(System.Action<Vector3, Vector3, float, float, float, bool> act)
+        // Calls act(drawnPos, groundPos, height, angle, size, warhead) for every drone visible on the current map (warhead null = recon drone).
+        private void ForEachVisibleDrone(System.Action<Vector3, Vector3, float, float, float, DroneWarheadExtension> act)
         {
             Map cur = Find.CurrentMap;
             if (cur == null)
@@ -330,20 +331,22 @@ namespace Shahed136Drones
                 Vector3 pos = a.origin + new Vector3(0f, 0f, fwd);
                 Vector3 ground = a.origin + new Vector3(1.4f * h, 0f, fwd - 2.2f * h);
                 // grows from rail size to full flight size as it climbs away
-                act(pos, ground, h, 0f, Mathf.Lerp(LaunchDrawSize, a.recon ? ReconDrawSize : DiveDrawSize, h) * (1f + 0.3f * h), a.recon);
+                DroneWarheadExtension w = a.recon ? null : DroneWarheadExtension.Of(a.type);
+                act(pos, ground, h, 0f, Mathf.Lerp(LaunchDrawSize * (w?.railScale ?? 1f), a.recon ? ReconDrawSize : DiveDrawSize * w.sizeFactor, h) * (1f + 0.3f * h), w);
             }
             foreach (DiveAnim d in dives)
             {
                 if (d.map != cur)
                     continue;
                 DiveState(d, now - d.startTick, out Vector3 ground, out Vector3 drawn, out float h);
-                act(drawn, ground, h, d.Angle, (d.landing ? ReconDrawSize : DiveDrawSize) * (1f + 0.3f * h), d.landing);
+                DroneWarheadExtension w = d.landing ? null : DroneWarheadExtension.Of(d.warheadDef);
+                act(drawn, ground, h, d.Angle, (d.landing ? ReconDrawSize : DiveDrawSize * w.sizeFactor) * (1f + 0.3f * h), w);
             }
             foreach (ReconDroneFlying r in MapDrones)
             {
                 if (r.Map != cur)
                     continue;
-                act(r.exactPos, r.exactPos + new Vector3(1.2f, 0f, -1.8f), 1f, r.heading, ReconDrawSize, true);
+                act(r.exactPos, r.exactPos + new Vector3(1.2f, 0f, -1.8f), 1f, r.heading, ReconDrawSize, null);
             }
         }
 
@@ -392,12 +395,12 @@ namespace Shahed136Drones
                 shadowMat = MaterialPool.MatFrom("Things/Shahed136/Shahed136_Top", ShaderDatabase.Transparent, new Color(0f, 0f, 0f, 0.35f));
                 reconShadowMat = MaterialPool.MatFrom("Things/Shahed136/ReconDrone_Top", ShaderDatabase.Transparent, new Color(0f, 0f, 0f, 0.35f));
             }
-            ForEachVisibleDrone((drawn, ground, h, angle, droneSize, recon) =>
+            ForEachVisibleDrone((drawn, ground, h, angle, droneSize, w) =>
             {
                 float size = droneSize * (1f - 0.25f * h);
                 Vector3 sp = ground;
                 sp.y = AltitudeLayer.Shadows.AltitudeFor();
-                Graphics.DrawMesh(MeshPool.plane10, Matrix4x4.TRS(sp, Quaternion.AngleAxis(angle, Vector3.up), new Vector3(size, 1f, size)), recon ? reconShadowMat : shadowMat, 0, cam);
+                Graphics.DrawMesh(MeshPool.plane10, Matrix4x4.TRS(sp, Quaternion.AngleAxis(angle, Vector3.up), new Vector3(size, 1f, size)), w == null ? reconShadowMat : w.ShadowMat, 0, cam);
             });
             if (FpvDroneFlying.Active.Count > 0)
             {
@@ -448,7 +451,7 @@ namespace Shahed136Drones
                 reconTex = ContentFinder<Texture2D>.Get("Things/Shahed136/ReconDrone_Top");
             }
             float cellPx = Find.CameraDriver.CellSizePixels / Prefs.UIScale;
-            ForEachVisibleDrone((drawn, ground, h, angle, droneSize, recon) =>
+            ForEachVisibleDrone((drawn, ground, h, angle, droneSize, w) =>
             {
                 Vector2 center = drawn.MapToUIPosition();
                 float px = droneSize * cellPx;
@@ -457,7 +460,7 @@ namespace Shahed136Drones
                 // RimWorld's own helper: respects the UI scale setting (Unity's version rotates
                 // around the wrong point when UI scale isn't 100%, throwing the drone off-screen).
                 UI.RotateAroundPivot(angle, center);
-                GUI.DrawTexture(r, recon ? reconTex : droneTex);
+                GUI.DrawTexture(r, w == null ? reconTex : (w.Tex ?? droneTex));
                 GUI.matrix = saved;
             });
             if (FpvDroneFlying.Active.Count > 0)
@@ -515,7 +518,8 @@ namespace Shahed136Drones
                     anims.RemoveAt(i);
                     continue;
                 }
-                if (t % (a.recon ? 9 : 3) == 0 && pos.ToIntVec3().InBounds(a.map))
+                float trail = a.recon ? 1f : DroneWarheadExtension.Of(a.type).smokeTrail;
+                if (trail > 0f && t % (a.recon ? 9 : 3) == 0 && pos.ToIntVec3().InBounds(a.map))
                     FleckMaker.ThrowSmoke(pos + new Vector3(0f, 0f, -1.3f * (1f + 0.4f * h)), a.map, a.recon ? 0.4f : 0.6f + 0.8f * h);
                 if (t == 1 && !a.recon)
                     FleckMaker.ThrowFireGlow(pos, a.map, 1.2f);
@@ -533,7 +537,9 @@ namespace Shahed136Drones
                 if (!d.soundPlayed && t >= d.TotalTicks - (d.landing ? LandSoundTicks : SoundTicks))
                 {
                     d.soundPlayed = true;
-                    DefDatabase<SoundDef>.GetNamedSilentFail(d.landing ? "Recon_Land" : "Shahed_Incoming")?.PlayOneShot(new TargetInfo(d.cell, d.map));
+                    string snd = d.landing ? "Recon_Land" : DroneWarheadExtension.Of(d.warheadDef).incomingSound;
+                    if (!snd.NullOrEmpty())
+                        DefDatabase<SoundDef>.GetNamedSilentFail(snd)?.PlayOneShot(new TargetInfo(d.cell, d.map));
                 }
                 if (t >= d.TotalTicks)
                 {
@@ -579,7 +585,7 @@ namespace Shahed136Drones
                     if (d.decoySpawned && d.decoy != null && d.decoy.Destroyed && !d.decoy.arrived)
                     {
                         d.hitsTaken++;
-                        if (d.hitsTaken >= HitsToShootDown)
+                        if (d.hitsTaken >= DroneWarheadExtension.Of(d.warheadDef).hitsToKill)
                         {
                             dives.RemoveAt(i);
                             Intercepted(d, ground);
@@ -607,7 +613,7 @@ namespace Shahed136Drones
                             IntVec3 cc = ground.ToIntVec3();
                             FleckMaker.ThrowSmoke(ground, d.map, 3f);
                             GenExplosion.DoExplosion(cc, d.map, 2.9f, DamageDefOf.Bomb, null, 20);
-                            Messages.Message("A Shahed-136 lost its GPS signal and crashed.", new TargetInfo(cc, d.map), MessageTypeDefOf.PositiveEvent, false);
+                            Messages.Message("A " + DroneWarheadExtension.Of(d.warheadDef).label + " lost its GPS signal and crashed.", new TargetInfo(cc, d.map), MessageTypeDefOf.PositiveEvent, false);
                             continue;
                         }
                         // push the aim point off target; more jammers = more drift
@@ -625,14 +631,15 @@ namespace Shahed136Drones
                         d.thing = null;      // can't track a moving target anymore
                         if (d.decoy != null && !d.decoy.Destroyed) { d.decoy.arrived = true; d.decoy.Destroy(); }
                         d.decoy = Projectile_DroneDecoy.LaunchFor(d.map, ground, nc, d.attacker);
-                        Messages.Message("A Shahed-136 lost its GPS signal and is drifting off course!", new TargetInfo(nc, d.map), MessageTypeDefOf.PositiveEvent, false);
+                        Messages.Message("A " + DroneWarheadExtension.Of(d.warheadDef).label + " lost its GPS signal and is drifting off course!", new TargetInfo(nc, d.map), MessageTypeDefOf.PositiveEvent, false);
                         DiveState(d, t, out ground, out drawn, out h);
                     }
                 }
 
                 Vector3 tail = drawn - d.Heading * 1.3f;
-                if (!d.landing && t % 3 == 0 && tail.ToIntVec3().InBounds(d.map))
-                    FleckMaker.ThrowSmoke(tail, d.map, 0.5f + 0.6f * h);
+                float trail = d.landing ? 0f : DroneWarheadExtension.Of(d.warheadDef).smokeTrail;
+                if (trail > 0f && t % 3 == 0 && tail.ToIntVec3().InBounds(d.map))
+                    FleckMaker.ThrowSmoke(tail, d.map, (0.5f + 0.6f * h) * trail);
             }
         }
 
@@ -643,7 +650,7 @@ namespace Shahed136Drones
                 c = d.cell;
             FleckMaker.ThrowSmoke(ground, d.map, 3f);
             GenExplosion.DoExplosion(c, d.map, 2.9f, DamageDefOf.Bomb, null, 20);
-            Messages.Message("A Shahed-136 was shot down before reaching its target!", new TargetInfo(c, d.map), MessageTypeDefOf.NeutralEvent, false);
+            Messages.Message("A " + DroneWarheadExtension.Of(d.warheadDef).label + " was shot down before reaching its target!", new TargetInfo(c, d.map), MessageTypeDefOf.NeutralEvent, false);
         }
 
         /// <summary>An enemy Shahed diving onto a cell of this map (debug action, later enemy attacks).</summary>
@@ -661,17 +668,20 @@ namespace Shahed136Drones
             List<Building> blds = map.listerBuildings.allBuildingsColonist;
             if (blds.Count == 0)
                 return false;
-            ThingDef warhead = DefDatabase<ThingDef>.GetNamedSilentFail("Shahed136Incoming");
             IntVec3 first = IntVec3.Invalid;
+            Dictionary<string, int> kinds = new Dictionary<string, int>();
             for (int i = 0; i < count; i++)
             {
                 IntVec3 c = blds.RandomElement().Position;
                 if (!first.IsValid) first = c;
+                ThingDef warhead = DroneWarheadExtension.RandomEnemyType();
+                string lbl = DroneWarheadExtension.Of(warhead).label;
+                kinds[lbl] = kinds.TryGetValue(lbl, out int k) ? k + 1 : 1;
                 StartDive(map, c, null, warhead, faction);
                 dives[dives.Count - 1].startTick += i * Rand.Range(120, 360);   // stagger the arrivals
             }
             Find.LetterStack.ReceiveLetter("Shahed strike",
-                faction.Name + " launched " + count + " Shahed-136 drone" + (count > 1 ? "s" : "") + " at your colony. They will hit your buildings in seconds.\n\nShoot them down with air defense or P1-SUN interceptors, or throw them off course with a Lima spoofer.",
+                faction.Name + " launched " + count + " strike drone" + (count > 1 ? "s" : "") + " at your colony (" + string.Join(", ", kinds.Select(kv => kv.Value + "x " + kv.Key)) + "). They will hit your buildings in seconds.\n\nShoot them down with air defense or P1-SUN interceptors, or throw them off course with a Lima spoofer.",
                 LetterDefOf.ThreatBig, new TargetInfo(first, map));
             return true;
         }
@@ -688,7 +698,7 @@ namespace Shahed136Drones
             float dist = Mathf.Min(tx, tz) + EdgeMargin;
 
             // cruise speed, but slow down if the path is too short for the incoming sound
-            float speed = Mathf.Min(CruiseSpeed, dist / SoundTicks);
+            float speed = Mathf.Min(DroneWarheadExtension.Of(warheadDef).speed, dist / SoundTicks);
 
             dives.Add(new DiveAnim
             {
@@ -782,7 +792,7 @@ namespace Shahed136Drones
             {
                 if (!Find.Maps.Contains(f.targetMap))
                 {
-                    Messages.Message("A Shahed-136 lost its target: the map no longer exists.", MessageTypeDefOf.NeutralEvent, false);
+                    Messages.Message("A " + DroneWarheadExtension.Of(f.strikeDef).label + " lost its target: the map no longer exists.", MessageTypeDefOf.NeutralEvent, false);
                     return;
                 }
                 IntVec3 cell = f.targetCell;
@@ -798,7 +808,7 @@ namespace Shahed136Drones
             Settlement s = f.targetSettlement;
             if (s == null || s.Destroyed)
             {
-                Messages.Message("A Shahed-136 found nothing at its target and crashed.", MessageTypeDefOf.NeutralEvent, false);
+                Messages.Message("A " + DroneWarheadExtension.Of(f.strikeDef).label + " found nothing at its target and crashed.", MessageTypeDefOf.NeutralEvent, false);
                 return;
             }
 
@@ -814,7 +824,7 @@ namespace Shahed136Drones
             {
                 Find.LetterStack.ReceiveLetter(
                     "Drone strike: " + s.LabelCap,
-                    "A Shahed-136 struck " + s.LabelCap + " (" + s.Faction.Name + "). Buildings were damaged and the settlement was thrown into chaos.",
+                    "A " + DroneWarheadExtension.Of(f.strikeDef).label + " struck " + s.LabelCap + " (" + s.Faction.Name + "). Buildings were damaged and the settlement was thrown into chaos.",
                     LetterDefOf.NeutralEvent,
                     new LookTargets(new GlobalTargetInfo(s)));
             }
@@ -830,7 +840,7 @@ namespace Shahed136Drones
         {
             Thing follow = (f.targetThing != null && f.targetThing.Spawned && f.targetThing.Map == map) ? f.targetThing : null;
             StartDive(map, cell, follow, f.strikeDef, Faction.OfPlayer);
-            Messages.Message("A Shahed-136 is diving on its target!", new TargetInfo(cell, map), MessageTypeDefOf.ThreatSmall, false);
+            Messages.Message("A " + DroneWarheadExtension.Of(f.strikeDef).label + " is diving on its target!", new TargetInfo(cell, map), MessageTypeDefOf.ThreatSmall, false);
         }
     }
 }

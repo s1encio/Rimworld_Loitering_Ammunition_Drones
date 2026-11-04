@@ -4,7 +4,7 @@
   <ThingDef ParentName="BuildingBase">
     <defName>Shahed_DroneLauncher</defName>
     <label>drone launch rail</label>
-    <description>An angled launch rail on a splayed steel stand for Shahed-136 loitering munitions. Colonists assemble drones directly on the rail (add a bill in the Bills tab). Once loaded, use the "Launch Shahed-136" button to pick a target on the world map. Explodes if destroyed while loaded.</description>
+    <description>An angled launch rail on a splayed steel stand for loitering munitions: Shahed-136, and after more research FP-1, LUCAS, ZALA Lancet, Tembita and FP-5 Flamingo. Colonists assemble drones directly on the rail (add a bill in the Bills tab). Once loaded, use the "Launch" button to pick a target on the world map. Explodes if destroyed while loaded.</description>
     <thingClass>Shahed136Drones.Building_DroneLauncher</thingClass>
     <graphicData>
       <texPath>Things/Shahed136/DroneLauncher</texPath>
@@ -104,6 +104,8 @@
         <fireRadius>6.9</fireRadius>
         <fireDamage>8</fireDamage>
         <cameraShake>4</cameraShake>
+        <!-- how often enemies pick this drone for their strikes -->
+        <enemyWeight>6</enemyWeight>
       </li>
     </modExtensions>
   </ThingDef>

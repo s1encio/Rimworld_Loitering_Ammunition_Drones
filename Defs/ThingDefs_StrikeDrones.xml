@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <!-- ================================================================
+       Strike drone types. Each one is a "warhead" def (like Shahed136Incoming):
+       its DroneWarheadExtension sets the blast and how the drone flies.
+       ================================================================ -->
+
+  <ThingDef Name="Shahed_StrikeDroneBase" ParentName="SkyfallerBase" Abstract="True">
+    <thingClass>Shahed136Drones.Skyfaller_Shahed</thingClass>
+    <size>(1,1)</size>
+    <skyfaller>
+      <movementType>Accelerate</movementType>
+      <shadow>Things/Skyfaller/SkyfallerShadowDropPod</shadow>
+      <shadowSize>(2, 2)</shadowSize>
+      <ticksToImpactRange>250~250</ticksToImpactRange>
+      <motesPerCell>0</motesPerCell>
+    </skyfaller>
+  </ThingDef>
+
+  <!-- FP-1: long-range, cheap, high wing with a pusher propeller -->
+  <ThingDef ParentName="Shahed_StrikeDroneBase">
+    <defName>Shahed_FP1Incoming</defName>
+    <label>FP-1 (diving)</label>
+    <graphicData>
+      <texPath>Things/Shahed136/FP1_Top</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>CutoutFlying</shaderType>
+      <drawSize>(3,3)</drawSize>
+    </graphicData>
+    <modExtensions>
+      <li Class="Shahed136Drones.DroneWarheadExtension">
+        <label>FP-1</label>
+        <topTex>Things/Shahed136/FP1_Top</topTex>
+        <sizeFactor>1.35</sizeFactor>
+        <railScale>1.1</railScale>
+        <speed>0.28</speed>
+        <hitsToKill>2</hitsToKill>
+        <range>30</range>
+        <extendedRange>70</extendedRange>
+        <ticksPerTile>170</ticksPerTile>
+        <explosionRadius>7.9</explosionRadius>
+        <damage>220</damage>
+        <armorPenetration>2.0</armorPenetration>
+        <secondaryExplosions>3</secondaryExplosions>
+        <secondaryRadius>4.0</secondaryRadius>
+        <secondaryDamage>100</secondaryDamage>
+        <fireRadius>5.9</fireRadius>
+        <fireDamage>8</fireDamage>
+        <cameraShake>3.5</cameraShake>
+        <enemyWeight>1</enemyWeight>
+      </li>
+    </modExtensions>
+  </ThingDef>
+
+  <!-- LUCAS: US copy of the Shahed, a bit faster and more accurate -->
+  <ThingDef ParentName="Shahed_StrikeDroneBase">
+    <defName>Shahed_LUCASIncoming</defName>
+    <label>LUCAS (diving)</label>
+    <graphicData>
+      <texPath>Things/Shahed136/LUCAS_Top</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>CutoutFlying</shaderType>
+      <drawSize>(3,3)</drawSize>
+    </graphicData>
+    <modExtensions>
+      <li Class="Shahed136Drones.DroneWarheadExtension">
+        <label>LUCAS</label>
+        <topTex>Things/Shahed136/LUCAS_Top</topTex>
+        <sizeFactor>0.95</sizeFactor>
+        <speed>0.32</speed>
+        <hitsToKill>2</hitsToKill>
+        <range>25</range>
+        <extendedRange>50</extendedRange>
+        <ticksPerTile>140</ticksPerTile>
+        <explosionRadius>9.4</explosionRadius>
+        <damage>240</damage>
+        <armorPenetration>2.0</armorPenetration>
+        <secondaryExplosions>4</secondaryExplosions>
+        <secondaryRadius>4.5</secondaryRadius>
+        <secondaryDamage>110</secondaryDamage>
+        <fireRadius>6.4</fireRadius>
+        <fireDamage>8</fireDamage>
+        <cameraShake>4</cameraShake>
+        <enemyWeight>2</enemyWeight>
+      </li>
+    </modExtensions>
+  </ThingDef>
+
+  <!-- ZALA Lancet: short-range electric loitering munition with a shaped-charge warhead -->
+  <ThingDef ParentName="Shahed_StrikeDroneBase">
+    <defName>Shahed_LancetIncoming</defName>
+    <label>Lancet (diving)</label>
+    <graphicData>
+      <texPath>Things/Shahed136/Lancet_Top</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>CutoutFlying</shaderType>
+      <drawSize>(2,2)</drawSize>
+    </graphicData>
+    <modExtensions>
+      <li Class="Shahed136Drones.DroneWarheadExtension">
+        <label>Lancet</label>
+        <topTex>Things/Shahed136/Lancet_Top</topTex>
+        <sizeFactor>0.5</sizeFactor>
+        <railScale>0.75</railScale>
+        <speed>0.4</speed>
+        <hitsToKill>1</hitsToKill>
+        <range>4</range>
+        <extendedRange>8</extendedRange>
+        <ticksPerTile>120</ticksPerTile>
+        <localStrike>true</localStrike>
+        <!-- electric motor: no engine noise, no exhaust smoke -->
+        <incomingSound></incomingSound>
+        <smokeTrail>0</smokeTrail>
+        <explosionRadius>3.9</explosionRadius>
+        <damage>180</damage>
+        <armorPenetration>4.0</armorPenetration>
+        <secondaryExplosions>0</secondaryExplosions>
+        <fireRadius>0</fireRadius>
+        <cameraShake>2</cameraShake>
+        <enemyWeight>3</enemyWeight>
+      </li>
+    </modExtensions>
+  </ThingDef>
+
+  <!-- Tembita: rocket-drone with a pulse-jet engine on its back -->
+  <ThingDef ParentName="Shahed_StrikeDroneBase">
+    <defName>Shahed_TembitaIncoming</defName>
+    <label>Tembita (diving)</label>
+    <graphicData>
+      <texPath>Things/Shahed136/Tembita_Top</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>CutoutFlying</shaderType>
+      <drawSize>(3,3)</drawSize>
+    </graphicData>
+    <modExtensions>
+      <li Class="Shahed136Drones.DroneWarheadExtension">
+        <label>Tembita</label>
+        <topTex>Things/Shahed136/Tembita_Top</topTex>
+        <sizeFactor>1.0</sizeFactor>
+        <speed>0.5</speed>
+        <hitsToKill>1</hitsToKill>
+        <range>25</range>
+        <extendedRange>45</extendedRange>
+        <ticksPerTile>90</ticksPerTile>
+        <smokeTrail>1.6</smokeTrail>
+        <explosionRadius>6.9</explosionRadius>
+        <damage>200</damage>
+        <armorPenetration>2.0</armorPenetration>
+        <secondaryExplosions>2</secondaryExplosions>
+        <secondaryRadius>3.9</secondaryRadius>
+        <secondaryDamage>90</secondaryDamage>
+        <fireRadius>4.9</fireRadius>
+        <fireDamage>8</fireDamage>
+        <cameraShake>3.5</cameraShake>
+        <enemyWeight>1</enemyWeight>
+      </li>
+    </modExtensions>
+  </ThingDef>
+
+  <!-- FP-5 Flamingo: jet-powered cruise missile with a huge warhead -->
+  <ThingDef ParentName="Shahed_StrikeDroneBase">
+    <defName>Shahed_FlamingoIncoming</defName>
+    <label>FP-5 Flamingo (diving)</label>
+    <graphicData>
+      <texPath>Things/Shahed136/Flamingo_Top</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+      <shaderType>CutoutFlying</shaderType>
+      <drawSize>(4,4)</drawSize>
+    </graphicData>
+    <modExtensions>
+      <li Class="Shahed136Drones.DroneWarheadExtension">
+        <label>FP-5 Flamingo</label>
+        <topTex>Things/Shahed136/Flamingo_Top</topTex>
+        <sizeFactor>1.6</sizeFactor>
+        <railScale>1.2</railScale>
+        <speed>0.6</speed>
+        <hitsToKill>3</hitsToKill>
+        <range>60</range>
+        <extendedRange>150</extendedRange>
+        <ticksPerTile>60</ticksPerTile>
+        <smokeTrail>1.3</smokeTrail>
+        <explosionRadius>14.9</explosionRadius>
+        <damage>400</damage>
+        <armorPenetration>3.0</armorPenetration>
+        <secondaryExplosions>8</secondaryExplosions>
+        <secondaryRadius>5.9</secondaryRadius>
+        <secondaryDamage>160</secondaryDamage>
+        <fireRadius>9.9</fireRadius>
+        <fireDamage>10</fireDamage>
+        <cameraShake>8</cameraShake>
+        <enemyWeight>0</enemyWeight>
+      </li>
+    </modExtensions>
+  </ThingDef>
+
+  <!-- ================================================================ recipes -->
+
+  <RecipeDef Name="Shahed_AssembleStrikeDroneBase" Abstract="True">
+    <workerClass>Shahed136Drones.RecipeWorker_AssembleDrone</workerClass>
+    <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+    <workSkill>Crafting</workSkill>
+    <effectWorking>Smith</effectWorking>
+    <soundWorking>Recipe_Machining</soundWorking>
+    <recipeUsers>
+      <li>Shahed_DroneLauncher</li>
+    </recipeUsers>
+  </RecipeDef>
+
+  <RecipeDef ParentName="Shahed_AssembleStrikeDroneBase">
+    <defName>Shahed_AssembleFP1</defName>
+    <label>assemble FP-1</label>
+    <description>Assemble an FP-1 long-range strike drone on this launch rail. Cheap and slow, with a pusher propeller and a long straight wing; it flies further than a Shahed but carries a smaller warhead.</description>
+    <jobString>Assembling FP-1.</jobString>
+    <workAmount>4500</workAmount>
+    <ingredients>
+      <li><filter><thingDefs><li>Steel</li></thingDefs></filter><count>50</count></li>
+      <li><filter><thingDefs><li>ComponentIndustrial</li></thingDefs></filter><count>3</count></li>
+      <li><filter><thingDefs><li>Chemfuel</li></thingDefs></filter><count>35</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>Steel</li><li>ComponentIndustrial</li><li>Chemfuel</li></thingDefs></fixedIngredientFilter>
+    <skillRequirements><Crafting>6</Crafting></skillRequirements>
+    <researchPrerequisite>Shahed_StrikeDroneFamily</researchPrerequisite>
+    <modExtensions>
+      <li Class="Shahed136Drones.DroneRecipeExtension"><warhead>Shahed_FP1Incoming</warhead></li>
+    </modExtensions>
+  </RecipeDef>
+
+  <RecipeDef ParentName="Shahed_AssembleStrikeDroneBase">
+    <defName>Shahed_AssembleLUCAS</defName>
+    <label>assemble LUCAS</label>
+    <description>Assemble a LUCAS (Low-cost Uncrewed Combat Attack System) on this launch rail. A copy of the Shahed-136: a bit faster, with a slightly smaller warhead.</description>
+    <jobString>Assembling LUCAS.</jobString>
+    <workAmount>4000</workAmount>
+    <ingredients>
+      <li><filter><thingDefs><li>Steel</li></thingDefs></filter><count>70</count></li>
+      <li><filter><thingDefs><li>ComponentIndustrial</li></thingDefs></filter><count>3</count></li>
+      <li><filter><thingDefs><li>Chemfuel</li></thingDefs></filter><count>25</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>Steel</li><li>ComponentIndustrial</li><li>Chemfuel</li></thingDefs></fixedIngredientFilter>
+    <skillRequirements><Crafting>7</Crafting></skillRequirements>
+    <researchPrerequisite>Shahed_StrikeDroneFamily</researchPrerequisite>
+    <modExtensions>
+      <li Class="Shahed136Drones.DroneRecipeExtension"><warhead>Shahed_LUCASIncoming</warhead></li>
+    </modExtensions>
+  </RecipeDef>
+
+  <RecipeDef ParentName="Shahed_AssembleStrikeDroneBase">
+    <defName>Shahed_AssembleLancet</defName>
+    <label>assemble ZALA Lancet</label>
+    <description>Assemble a ZALA Lancet on this launch rail. A small electric loitering munition with X-shaped wings and a camera nose. Short range, but it can also hit targets on this map. Silent, no smoke trail, and its shaped charge punches through armor, but its blast is small and one hit brings it down.</description>
+    <jobString>Assembling Lancet.</jobString>
+    <workAmount>3000</workAmount>
+    <ingredients>
+      <li><filter><thingDefs><li>Steel</li></thingDefs></filter><count>30</count></li>
+      <li><filter><thingDefs><li>ComponentIndustrial</li></thingDefs></filter><count>4</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>Steel</li><li>ComponentIndustrial</li></thingDefs></fixedIngredientFilter>
+    <skillRequirements><Crafting>6</Crafting></skillRequirements>
+    <researchPrerequisite>Shahed_TacticalLoiteringMunitions</researchPrerequisite>
+    <modExtensions>
+      <li Class="Shahed136Drones.DroneRecipeExtension"><warhead>Shahed_LancetIncoming</warhead></li>
+    </modExtensions>
+  </RecipeDef>
+
+  <RecipeDef ParentName="Shahed_AssembleStrikeDroneBase">
+    <defName>Shahed_AssembleTembita</defName>
+    <label>assemble Tembita</label>
+    <description>Assemble a Tembita rocket-drone on this launch rail. A pulse-jet engine on its back makes it much faster than propeller drones, so it reaches its target quickly. One hit brings it down.</description>
+    <jobString>Assembling Tembita.</jobString>
+    <workAmount>4000</workAmount>
+    <ingredients>
+      <li><filter><thingDefs><li>Steel</li></thingDefs></filter><count>45</count></li>
+      <li><filter><thingDefs><li>ComponentIndustrial</li></thingDefs></filter><count>2</count></li>
+      <li><filter><thingDefs><li>Chemfuel</li></thingDefs></filter><count>40</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>Steel</li><li>ComponentIndustrial</li><li>Chemfuel</li></thingDefs></fixedIngredientFilter>
+    <skillRequirements><Crafting>7</Crafting></skillRequirements>
+    <researchPrerequisite>Shahed_JetPoweredDrones</researchPrerequisite>
+    <modExtensions>
+      <li Class="Shahed136Drones.DroneRecipeExtension"><warhead>Shahed_TembitaIncoming</warhead></li>
+    </modExtensions>
+  </RecipeDef>
+
+  <RecipeDef ParentName="Shahed_AssembleStrikeDroneBase">
+    <defName>Shahed_AssembleFlamingo</defName>
+    <label>assemble FP-5 Flamingo</label>
+    <description>Assemble an FP-5 Flamingo cruise missile on this launch rail. Jet engine, very long range, high speed and a huge warhead. It survives two air-defense hits. Expensive and slow to build.</description>
+    <jobString>Assembling FP-5 Flamingo.</jobString>
+    <workAmount>12000</workAmount>
+    <ingredients>
+      <li><filter><thingDefs><li>Steel</li></thingDefs></filter><count>250</count></li>
+      <li><filter><thingDefs><li>Plasteel</li></thingDefs></filter><count>40</count></li>
+      <li><filter><thingDefs><li>ComponentIndustrial</li></thingDefs></filter><count>10</count></li>
+      <li><filter><thingDefs><li>Chemfuel</li></thingDefs></filter><count>150</count></li>
+    </ingredients>
+    <fixedIngredientFilter><thingDefs><li>Steel</li><li>Plasteel</li><li>ComponentIndustrial</li><li>Chemfuel</li></thingDefs></fixedIngredientFilter>
+    <skillRequirements><Crafting>10</Crafting></skillRequirements>
+    <researchPrerequisite>Shahed_CruiseMissiles</researchPrerequisite>
+    <modExtensions>
+      <li Class="Shahed136Drones.DroneRecipeExtension"><warhead>Shahed_FlamingoIncoming</warhead></li>
+    </modExtensions>
+  </RecipeDef>
+
+  <!-- ================================================================ research -->
+
+  <ResearchProjectDef>
+    <defName>Shahed_StrikeDroneFamily</defName>
+    <label>long-range strike drones</label>
+    <description>More designs for the launch rail: the FP-1, cheap with a very long range, and the LUCAS, a faster copy of the Shahed-136.</description>
+    <baseCost>2000</baseCost>
+    <techLevel>Industrial</techLevel>
+    <prerequisites>
+      <li>Shahed_LongRangeNavigation</li>
+    </prerequisites>
+    <tab>Drones</tab>
+    <researchViewX>2.00</researchViewX>
+    <researchViewY>0.00</researchViewY>
+  </ResearchProjectDef>
+
+  <ResearchProjectDef>
+    <defName>Shahed_TacticalLoiteringMunitions</defName>
+    <label>tactical loitering munitions</label>
+    <description>The ZALA Lancet: a small electric loitering munition with a camera and a shaped-charge warhead. Short range, but it can strike targets on its own map.</description>
+    <baseCost>1800</baseCost>
+    <techLevel>Industrial</techLevel>
+    <prerequisites>
+      <li>Shahed_ReconDrones</li>
+      <li>Shahed_FPVDrones</li>
+    </prerequisites>
+    <tab>Drones</tab>
+    <researchViewX>2.00</researchViewX>
+    <researchViewY>1.00</researchViewY>
+  </ResearchProjectDef>
+
+  <ResearchProjectDef>
+    <defName>Shahed_JetPoweredDrones</defName>
+    <label>jet-powered drones</label>
+    <description>The Tembita rocket-drone: a pulse-jet engine makes it reach its target much faster than propeller drones.</description>
+    <baseCost>2800</baseCost>
+    <techLevel>Industrial</techLevel>
+    <prerequisites>
+      <li>Shahed_StrikeDroneFamily</li>
+    </prerequisites>
+    <tab>Drones</tab>
+    <researchViewX>3.00</researchViewX>
+    <researchViewY>0.00</researchViewY>
+  </ResearchProjectDef>
+
+  <ResearchProjectDef>
+    <defName>Shahed_CruiseMissiles</defName>
+    <label>cruise missiles</label>
+    <description>The FP-5 Flamingo: a jet-powered cruise missile with a very long range and a huge warhead.</description>
+    <baseCost>4500</baseCost>
+    <techLevel>Industrial</techLevel>
+    <prerequisites>
+      <li>Shahed_JetPoweredDrones</li>
+    </prerequisites>
+    <tab>Drones</tab>
+    <researchViewX>4.00</researchViewX>
+    <researchViewY>0.00</researchViewY>
+  </ResearchProjectDef>
+
+</Defs>

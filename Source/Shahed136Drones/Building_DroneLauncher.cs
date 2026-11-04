@@ -15,6 +15,7 @@ namespace Shahed136Drones
         private static readonly Texture2D ReconIcon = ContentFinder<Texture2D>.Get("UI/Commands/LaunchRecon");
 
         private int loadedDrones;
+        private ThingDef loadedType;      // which drone is on the rail (null = Shahed-136)
         private bool reconLoaded;
         private GlobalTargetInfo pendingReconTarget = GlobalTargetInfo.Invalid;
         private Graphic loadedGraphic;
@@ -34,10 +35,29 @@ namespace Shahed136Drones
                             ShaderDatabase.Cutout, def.graphicData.drawSize, Color.white);
                     return reconGraphic;
                 }
+                if (!IsShahed)
+                    return base.Graphic;      // the drone itself is drawn on top in DrawAt
                 if (loadedGraphic == null)
                     loadedGraphic = GraphicDatabase.Get<Graphic_Single>(def.graphicData.texPath + "_Loaded",
                         ShaderDatabase.Cutout, def.graphicData.drawSize, Color.white);
                 return loadedGraphic;
+            }
+        }
+
+        public ThingDef LoadedType => loadedType ?? DefDatabase<ThingDef>.GetNamedSilentFail("Shahed136Incoming");
+        public DroneWarheadExtension Warhead => DroneWarheadExtension.Of(LoadedType);
+        private bool IsShahed => loadedType == null || loadedType.defName == "Shahed136Incoming";
+        private string DroneLabel => loadedDrones > 0 ? Warhead.label : "drone";
+
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
+        {
+            base.DrawAt(drawLoc, flip);
+            if (loadedDrones > 0 && !reconLoaded && !IsShahed)
+            {
+                DroneWarheadExtension w = Warhead;
+                float size = 2.75f * w.railScale;
+                Vector3 pos = drawLoc + new Vector3(0f, 0.04f, -0.1f);
+                Graphics.DrawMesh(MeshPool.plane10, Matrix4x4.TRS(pos, Quaternion.identity, new Vector3(size, 1f, size)), w.Mat, 0);
             }
         }
 
@@ -74,12 +94,17 @@ namespace Shahed136Drones
             get
             {
                 DroneLauncherExtension ext = Ext;
-                return (ext.rangeResearch != null && ext.rangeResearch.IsFinished) ? ext.extendedRange : ext.range;
+                DroneWarheadExtension w = Warhead;
+                return (ext.rangeResearch != null && ext.rangeResearch.IsFinished) ? w.extendedRange : w.range;
             }
         }
 
-        public void AddDrone()
+        public void AddDrone() => AddDrone(null);
+
+        public void AddDrone(ThingDef type)
         {
+            if (loadedDrones <= 0)
+                loadedType = type;
             loadedDrones = Mathf.Min(loadedDrones + 1, Ext.capacity);
         }
 
@@ -88,6 +113,7 @@ namespace Shahed136Drones
         {
             base.ExposeData();
             Scribe_Values.Look(ref loadedDrones, "loadedDrones", 0);
+            Scribe_Defs.Look(ref loadedType, "loadedType");
             Scribe_Values.Look(ref reconLoaded, "reconLoaded", false);
             Scribe_TargetInfo.Look(ref pendingReconTarget, "pendingReconTarget");
         }
@@ -95,7 +121,7 @@ namespace Shahed136Drones
         public override string GetInspectString()
         {
             string baseStr = base.GetInspectString();
-            string loaded = loadedDrones > 0 ? "Shahed-136" : reconLoaded ? "recon drone" : "empty";
+            string loaded = loadedDrones > 0 ? Warhead.label : reconLoaded ? "recon drone" : "empty";
             string extra = "Loaded: " + loaded + "\nStrike range: " + Range + " world tiles, recon range: " + ReconRange + " world tiles";
             if (ReconReadyToLaunch)
                 extra += "\nRecon launch ordered, waiting for operator";
@@ -125,13 +151,13 @@ namespace Shahed136Drones
 
             Command_Action launch = new Command_Action
             {
-                defaultLabel = "Launch Shahed-136",
-                defaultDesc = "Launch a loaded drone at a target up to " + Range + " world tiles away. Pick a tile on the world map, then (if a map is open there) the exact spot, building or pawn to hit.\n\nValid targets: any map you currently have open, or faction settlements. You need recon at the target: a caravan on that tile, or a colonist on that map. You can't strike your own launch site.\n\nLoaded: " + loadedDrones + " / " + Ext.capacity,
+                defaultLabel = "Launch " + DroneLabel,
+                defaultDesc = "Launch the loaded " + DroneLabel + " at a target up to " + Range + " world tiles away." + (Warhead.localStrike && loadedDrones > 0 ? " It can also strike this map." : "") + " Pick a tile on the world map, then (if a map is open there) the exact spot, building or pawn to hit.\n\nValid targets: any map you currently have open, or faction settlements. You need recon at the target: a caravan on that tile, or a colonist on that map." + (Warhead.localStrike && loadedDrones > 0 ? "" : " You can't strike your own launch site.") + "\n\nLoaded: " + loadedDrones + " / " + Ext.capacity,
                 icon = LaunchIcon,
                 action = StartChoosingDestination
             };
             if (loadedDrones <= 0)
-                launch.Disable("No Shahed-136 loaded. Add an \"assemble Shahed-136\" bill to this launch rail.");
+                launch.Disable("No strike drone loaded. Add an \"assemble ...\" bill to this launch rail.");
             yield return launch;
 
             Command_Action recon = new Command_Action
@@ -150,8 +176,15 @@ namespace Shahed136Drones
                 yield return new Command_Action
                 {
                     defaultLabel = "DEV: Load drone",
-                    action = AddDrone
+                    action = () => AddDrone(null)
                 };
+                foreach (ThingDef d in DefDatabase<ThingDef>.AllDefsListForReading)
+                {
+                    DroneWarheadExtension w = d.GetModExtension<DroneWarheadExtension>();
+                    if (w == null || d.defName == "Shahed136Incoming") continue;
+                    ThingDef dd = d;
+                    yield return new Command_Action { defaultLabel = "DEV: Load " + w.label, action = () => { loadedDrones = 0; reconLoaded = false; AddDrone(dd); } };
+                }
                 yield return new Command_Action
                 {
                     defaultLabel = "DEV: Load recon drone",
@@ -187,7 +220,7 @@ namespace Shahed136Drones
             if (!target.IsValid)
                 return "Invalid target";
             dist = DistanceTo(target);
-            if (dist < 0.5f)
+            if (dist < 0.5f && !(Warhead.localStrike && loadedDrones > 0))
                 return "Can't strike your own launch site";
             if (dist > Range)
                 return "Out of range (" + dist.ToString("0") + " / " + Range + " tiles)";
@@ -263,7 +296,7 @@ namespace Shahed136Drones
             Settlement s = Find.WorldObjects.SettlementAt(target.Tile);
             if (s != null && s.Faction != null && s.Faction != Faction.OfPlayer)
             {
-                string text = "Launch a Shahed-136 at " + s.LabelCap + " (" + s.Faction.Name + ")?";
+                string text = "Launch a " + DroneLabel + " at " + s.LabelCap + " (" + s.Faction.Name + ")?";
                 if (!s.Faction.HostileTo(Faction.OfPlayer))
                     text += "\n\nThis faction is NOT hostile. The strike will badly damage relations.";
                 Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation(text, () => Launch(null, IntVec3.Invalid, null, s, dist, destPos), true));
@@ -415,12 +448,16 @@ namespace Shahed136Drones
                 return;
 
             DroneLauncherExtension ext = Ext;
+            ThingDef type = LoadedType;
+            DroneWarheadExtension w = Warhead;
             loadedDrones--;
+            if (loadedDrones <= 0)
+                loadedType = null;
 
             GameComponent_DroneFlights comp = Current.Game.GetComponent<GameComponent_DroneFlights>();
             Vector3 origin = DrawPos + new Vector3(0f, 0f, -0.1f);
 
-            int worldTicks = Mathf.Max(ext.minFlightTicks, Mathf.RoundToInt(dist * ext.ticksPerTile));
+            int worldTicks = Mathf.Max(ext.minFlightTicks, Mathf.RoundToInt(dist * w.ticksPerTile));
             int exitTicks = GameComponent_DroneFlights.LaunchExitTicks(Map, origin);
             int ticks = exitTicks + worldTicks;
             DroneFlight flight = new DroneFlight
@@ -430,7 +467,7 @@ namespace Shahed136Drones
                 targetThing = targetThing,
                 targetSettlement = settlement,
                 ticksLeft = ticks,
-                strikeDef = ext.strikeSkyfaller ?? DefDatabase<ThingDef>.GetNamed("Shahed136Incoming"),
+                strikeDef = type ?? ext.strikeSkyfaller ?? DefDatabase<ThingDef>.GetNamed("Shahed136Incoming"),
                 goodwillImpact = ext.settlementGoodwillImpact,
                 // the world-map marker only appears once the drone has left this map
                 departTicksLeft = exitTicks,
@@ -445,12 +482,13 @@ namespace Shahed136Drones
             // Launch animation on this map: the drone slides off the rail and climbs away
             if (Find.CurrentMap != Map)
                 CameraJumper.TryJump(this);
-            comp.StartLaunchAnimation(Map, origin);
+            comp.StartLaunchAnimation(Map, origin, false, type);
             FleckMaker.ThrowSmoke(DrawPos, Map, 2.5f);
-            FleckMaker.ThrowFireGlow(DrawPos, Map, 1.5f);
-            (DefDatabase<SoundDef>.GetNamedSilentFail("Shahed_Launch") ?? DefDatabase<SoundDef>.GetNamedSilentFail("DropPod_Leaving"))?.PlayOneShot(new TargetInfo(Position, Map));
+            if (w.smokeTrail > 0f)
+                FleckMaker.ThrowFireGlow(DrawPos, Map, 1.5f);
+            (DefDatabase<SoundDef>.GetNamedSilentFail(w.launchSound) ?? DefDatabase<SoundDef>.GetNamedSilentFail("DropPod_Leaving"))?.PlayOneShot(new TargetInfo(Position, Map));
 
-            Messages.Message("Shahed-136 launched. Estimated time to target: " + ticks.ToStringTicksToPeriod() + ".",
+            Messages.Message(w.label + " launched. Estimated time to target: " + ticks.ToStringTicksToPeriod() + ".",
                 this, MessageTypeDefOf.NeutralEvent, false);
         }
     }

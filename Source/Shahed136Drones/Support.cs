@@ -38,6 +38,88 @@ namespace Shahed136Drones
         public float fireRadius = 6.9f;
         public int fireDamage = 8;
         public float cameraShake = 4f;
+
+        // ---- the drone type that carries this warhead ----
+        public string label = "Shahed-136";
+        public string topTex = "Things/Shahed136/Shahed136_Top";
+        public float sizeFactor = 1f;          // size in flight relative to the Shahed
+        public float railScale = 1f;           // size on the launch rail relative to the Shahed
+        public float speed = 0.3f;             // cells per tick on the final approach
+        public int hitsToKill = 2;             // air-defense hits it survives minus one
+        public int range = 20;                 // world tiles
+        public int extendedRange = 45;         // after long-range navigation
+        public float ticksPerTile = 150f;
+        public bool localStrike = false;       // may hit the map it was launched from
+        public string incomingSound = "Shahed_Incoming";
+        public string launchSound = "Shahed_Launch";
+        public float smokeTrail = 1f;          // 0 = electric, no exhaust
+        public float enemyWeight = 0f;         // chance weight in enemy drone strikes
+
+        private static readonly Dictionary<string, UnityEngine.Texture2D> texCache = new Dictionary<string, UnityEngine.Texture2D>();
+        private static readonly Dictionary<string, UnityEngine.Material> shadowCache = new Dictionary<string, UnityEngine.Material>();
+        private static readonly Dictionary<string, UnityEngine.Material> matCache = new Dictionary<string, UnityEngine.Material>();
+
+        public static DroneWarheadExtension Of(ThingDef def) => def?.GetModExtension<DroneWarheadExtension>() ?? Default;
+
+        public UnityEngine.Texture2D Tex
+        {
+            get
+            {
+                if (!texCache.TryGetValue(topTex, out UnityEngine.Texture2D t))
+                {
+                    t = ContentFinder<UnityEngine.Texture2D>.Get(topTex, false) ?? ContentFinder<UnityEngine.Texture2D>.Get("Things/Shahed136/Shahed136_Top");
+                    texCache[topTex] = t;
+                }
+                return t;
+            }
+        }
+
+        public UnityEngine.Material ShadowMat
+        {
+            get
+            {
+                if (!shadowCache.TryGetValue(topTex, out UnityEngine.Material m))
+                {
+                    m = MaterialPool.MatFrom(topTex, ShaderDatabase.Transparent, new UnityEngine.Color(0f, 0f, 0f, 0.35f));
+                    shadowCache[topTex] = m;
+                }
+                return m;
+            }
+        }
+
+        public UnityEngine.Material Mat
+        {
+            get
+            {
+                if (!matCache.TryGetValue(topTex, out UnityEngine.Material m))
+                {
+                    m = MaterialPool.MatFrom(topTex, ShaderDatabase.Cutout);
+                    matCache[topTex] = m;
+                }
+                return m;
+            }
+        }
+
+        /// <summary>A random drone type for an enemy strike, by enemyWeight.</summary>
+        public static ThingDef RandomEnemyType()
+        {
+            List<ThingDef> types = new List<ThingDef>();
+            foreach (ThingDef d in DefDatabase<ThingDef>.AllDefsListForReading)
+            {
+                DroneWarheadExtension e = d.GetModExtension<DroneWarheadExtension>();
+                if (e != null && e.enemyWeight > 0f)
+                    types.Add(d);
+            }
+            if (types.Count == 0)
+                return DefDatabase<ThingDef>.GetNamedSilentFail("Shahed136Incoming");
+            return types.RandomElementByWeight(d => d.GetModExtension<DroneWarheadExtension>().enemyWeight);
+        }
+    }
+
+    /// <summary>On an "assemble ..." recipe: which drone type it mounts on the rail.</summary>
+    public class DroneRecipeExtension : DefModExtension
+    {
+        public ThingDef warhead;
     }
 
     public static class Warhead
@@ -75,8 +157,9 @@ namespace Shahed136Drones
             Building_DroneLauncher launcher = billDoer?.CurJob?.GetTarget(TargetIndex.A).Thing as Building_DroneLauncher;
             if (launcher != null)
             {
-                launcher.AddDrone();
-                Messages.Message("Shahed-136 mounted on the launch rail (" + launcher.LoadedDrones + "/" + launcher.Ext.capacity + ").",
+                ThingDef type = recipe?.GetModExtension<DroneRecipeExtension>()?.warhead;
+                launcher.AddDrone(type);
+                Messages.Message(DroneWarheadExtension.Of(launcher.LoadedType).label + " mounted on the launch rail (" + launcher.LoadedDrones + "/" + launcher.Ext.capacity + ").",
                     launcher, MessageTypeDefOf.PositiveEvent, false);
             }
         }

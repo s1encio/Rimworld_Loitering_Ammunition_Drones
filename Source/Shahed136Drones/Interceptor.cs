@@ -303,7 +303,7 @@ namespace Shahed136Drones
             FleckMaker.ThrowFireGlow(at, map, 1.2f);
             FleckMaker.ThrowSmoke(at, map, 1.5f);
             if (t.dive != null)
-                Current.Game.GetComponent<GameComponent_DroneFlights>().KillDive(t.dive, "A " + name + " intercepted a Shahed-136 in mid-air!");
+                Current.Game.GetComponent<GameComponent_DroneFlights>().KillDive(t.dive, "A " + name + " intercepted a " + DroneWarheadExtension.Of(t.dive.warheadDef).label + " in mid-air!");
             else if (t.thing is FpvDroneFlying f)
             {
                 Messages.Message("A " + name + " intercepted an enemy FPV drone.", new TargetInfo(f.Position, map), MessageTypeDefOf.PositiveEvent, false);
